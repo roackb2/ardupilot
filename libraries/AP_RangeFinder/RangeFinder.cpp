@@ -28,6 +28,7 @@
 #include "AP_RangeFinder_uLanding.h"
 #include "AP_RangeFinder_trone.h"
 #include "AP_RangeFinder_PX4FLOW.h"
+#include "AP_RangeFinder_LTCL45.h"
 #include <AP_BoardConfig/AP_BoardConfig.h>
 
 extern const AP_HAL::HAL &hal;
@@ -698,6 +699,9 @@ void RangeFinder::detect_instance(uint8_t instance)
             state[instance].instance = instance;
             drivers[instance] = new AP_RangeFinder_PX4FLOW(*this, instance, state[instance]);
         }
+        break;
+    case RangeFinder_TYPE_LTCL45:
+        _add_backend(AP_RangeFinder_LTC45::detect(*this, instance, state[instance]));
         break;
     default:
         break;
