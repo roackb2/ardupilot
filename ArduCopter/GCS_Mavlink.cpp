@@ -221,6 +221,15 @@ void NOINLINE Copter::send_rangefinder(mavlink_channel_t chan)
 }
 #endif
 
+void NOINLINE Copter::send_landing_target(mavlink_channel_t chan)
+{
+    Vector2f tgt;
+    if (precland.target_acquired()) {
+        precland.get_target_position_relative_cm(tgt);
+        mavlink_msg_landing_target_send(chan, 0, 0, 0, tgt.x, tgt.y, 0, 0, 0);                        
+    }
+}
+
 void NOINLINE Copter::send_proximity(mavlink_channel_t chan, uint16_t count_max)
 {
 #if PROXIMITY_ENABLED == ENABLED
@@ -599,6 +608,9 @@ bool GCS_MAVLINK_Copter::try_send_message(enum ap_message id)
     case MSG_BATTERY_STATUS:
         send_battery_status(copter.battery);
         break;
+    case MSG_LANDING_TARGET:
+        CHECK_PAYLOAD_SIZE(LANDING_TARGET);
+        copter.send_landing_target(chan);
     }
 
     return true;
@@ -775,6 +787,7 @@ GCS_MAVLINK_Copter::data_stream_send(void)
     if (copter.gcs_out_of_time) return;
 
     if (stream_trigger(STREAM_EXTRA3)) {
+        send_message(MSG_LANDING_TARGET);
         send_message(MSG_AHRS);
         send_message(MSG_HWSTATUS);
         send_message(MSG_SYSTEM_TIME);
