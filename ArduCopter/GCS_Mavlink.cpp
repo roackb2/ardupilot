@@ -748,6 +748,7 @@ GCS_MAVLINK_Copter::data_stream_send(void)
         send_message(MSG_GPS_RAW);
         send_message(MSG_NAV_CONTROLLER_OUTPUT);
         send_message(MSG_FENCE_STATUS);
+        send_message(MSG_LANDING_TARGET);
     }
 
     if (copter.gcs_out_of_time) return;
@@ -787,7 +788,6 @@ GCS_MAVLINK_Copter::data_stream_send(void)
     if (copter.gcs_out_of_time) return;
 
     if (stream_trigger(STREAM_EXTRA3)) {
-        send_message(MSG_LANDING_TARGET);
         send_message(MSG_AHRS);
         send_message(MSG_HWSTATUS);
         send_message(MSG_SYSTEM_TIME);
