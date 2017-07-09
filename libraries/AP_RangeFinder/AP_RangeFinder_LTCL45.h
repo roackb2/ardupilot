@@ -62,7 +62,7 @@ class AP_RangeFinder_LTC45 : public AP_RangeFinder_Backend
 
 public:
     // static detection function
-    static AP_RangeFinder_Backend *detect(RangeFinder &ranger, uint8_t instance,
+    static AP_RangeFinder_Backend *detect(uint8_t bus, RangeFinder &ranger, uint8_t instance,
                                           RangeFinder::RangeFinder_State &_state);
 
     // update state
@@ -71,7 +71,7 @@ public:
 
 private:
     // constructor
-    AP_RangeFinder_LTC45(RangeFinder &ranger, uint8_t instance,
+    AP_RangeFinder_LTC45(uint8_t bus, RangeFinder &ranger, uint8_t instance,
                                   RangeFinder::RangeFinder_State &_state);
     // start a reading
     bool start_reading(void);
