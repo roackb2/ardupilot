@@ -30,6 +30,7 @@
  *
  * Driver for the LTC LIDAR 45m module connected via I2C.
  */
+#include <stdio.h>
 #include "AP_RangeFinder_LTCL45.h"
 
 #include <utility>
@@ -44,10 +45,10 @@ extern const AP_HAL::HAL& hal;
    constructor is not called until detect() returns true, so we
    already know that we should setup the rangefinder
 */
-AP_RangeFinder_LTC45::AP_RangeFinder_LTC45(RangeFinder &_ranger, uint8_t instance,
+AP_RangeFinder_LTC45::AP_RangeFinder_LTC45(uint8_t bus, RangeFinder &_ranger, uint8_t instance,
                                                              RangeFinder::RangeFinder_State &_state)
     : AP_RangeFinder_Backend(_ranger, instance, _state)
-    , _dev(hal.i2c_mgr->get_device(1, AP_RANGEFINDER_LTCLMINI45_ADDR))
+    , _dev(hal.i2c_mgr->get_device(bus, AP_RANGEFINDER_LTCLMINI45_ADDR))
 {
 }
 
@@ -56,11 +57,11 @@ AP_RangeFinder_LTC45::AP_RangeFinder_LTC45(RangeFinder &_ranger, uint8_t instanc
    trying to take a reading on I2C. If we get a result the sensor is
    there.
 */
-AP_RangeFinder_Backend *AP_RangeFinder_LTC45::detect(RangeFinder &_ranger, uint8_t instance,
+AP_RangeFinder_Backend *AP_RangeFinder_LTC45::detect(uint8_t bus, RangeFinder &_ranger, uint8_t instance,
                                                               RangeFinder::RangeFinder_State &_state)
 {
     AP_RangeFinder_LTC45 *sensor
-        = new AP_RangeFinder_LTC45(_ranger, instance, _state);
+        = new AP_RangeFinder_LTC45(bus, _ranger, instance, _state);
 	sensor->last_distance_cm = 0;
 	sensor->get_FWVER(sensor->_fw_version);
 	if (sensor->_fw_version != LTCL45SWVER_V1) {
@@ -114,7 +115,10 @@ bool AP_RangeFinder_LTC45::get_reading(uint16_t &reading_cm)
 	// so we need to check the value by the DIST_BITINV register
 	// the value of DIST_BITINV is complement of DIST register
 	if ((dist_cm ^ inv_dist_cm) == 0xFFFF) {
-		reading_cm = dist_cm;
+                if (dist_cm == 0)
+                        reading_cm = AP_RANGEFINDER_LTCLMINI45_MIN_DISTANCE;
+                else
+		        reading_cm = dist_cm;
 		last_distance_cm = dist_cm;
 	} else {
 		//state.voltage_mv = dist_cm * 10;// for inspecting the measurement spike
