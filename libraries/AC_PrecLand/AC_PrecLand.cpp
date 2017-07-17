@@ -89,6 +89,27 @@ const AP_Param::GroupInfo AC_PrecLand::var_info[] = {
     // @Values: -1:DefaultBus,0:InternalI2C,1:ExternalI2C
     // @User: Advanced
     AP_GROUPINFO("BUS",    8, AC_PrecLand, _bus, -1),
+
+    // @Param: GO_ARD_L
+    // @DisplayName: go-around low AGL
+    // @Description: low AGL for go-around action
+    // @User: Advanced
+    // @Units: Centimeters
+    AP_GROUPINFO("GO_ARD_L", 9, AC_PrecLand, _go_around_low_agl, 50.0f),
+
+    // @Param: GO_ARD_H
+    // @DisplayName: go-around high AGL
+    // @Description: high AGL for go-around action
+    // @User: Advanced
+    // @Units: Centimeters
+    AP_GROUPINFO("GO_ARD_H", 10, AC_PrecLand, _go_around_high_agl, 300.0f),
+
+    // @Param: GO_ARD_TH
+    // @DisplayName: go-around beacon threshold
+    // @Description: beacon offset threshold for go-around action
+    // @User: Advanced
+    // @Units: Centimeters
+    AP_GROUPINFO("GO_ARD_TH", 11, AC_PrecLand, _go_around_thresh, 40.0f),
     
     AP_GROUPEND
 };
