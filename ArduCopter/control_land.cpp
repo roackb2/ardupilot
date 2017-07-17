@@ -250,7 +250,12 @@ void Copter::land_run_horizontal_control()
     bool doing_precision_landing = !ap.land_repo_active && precland.target_acquired();
     // run precision landing
     if (doing_precision_landing) {
-        Vector2f target_pos, target_vel_rel;
+        Vector2f target_pos, target_vel_rel, target_pos_rel;
+        if (precland.behaviour() == 3 && rangefinder_alt_ok() && rangefinder_state.alt_cm > 50.0f && rangefinder_state.alt_cm < 300.0f && precland.get_target_position_relative_cm(target_pos_rel)) {
+            if (target_pos_rel.x > 40 || target_pos_rel.y > 40) {
+                set_mode(LOITER, MODE_REASON_THROTTLE_LAND_ESCAPE);
+            }
+        }
         if (!precland.get_target_position_cm(target_pos)) {
             target_pos.x = inertial_nav.get_position().x;
             target_pos.y = inertial_nav.get_position().y;

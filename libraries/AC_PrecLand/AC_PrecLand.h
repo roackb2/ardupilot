@@ -30,7 +30,8 @@ public:
     enum PrecLandBehaviour {
         PRECLAND_BEHAVIOUR_DISABLED,
         PRECLAND_BEHAVIOR_ALWAYSLAND,
-        PRECLAND_BEHAVIOR_CAUTIOUS
+        PRECLAND_BEHAVIOR_CAUTIOUS,
+        PRECLAND_BEHAVIOR_GO_AROUND
     };
 
     // types of precision landing (used for PRECLAND_TYPE parameter)
@@ -53,6 +54,8 @@ public:
 
     // returns true if precision landing is enabled (used only for logging)
     bool enabled() const { return _enabled.get(); }
+
+    int8_t behaviour() const { return _enabled; }
 
     // returns time of last update
     uint32_t last_update_ms() const { return _last_update_ms; }
