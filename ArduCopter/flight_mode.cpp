@@ -109,6 +109,10 @@ bool Copter::set_mode(control_mode_t mode, mode_reason_t reason)
             success = guided_nogps_init(ignore_checks);
             break;
 
+        case GO_AROUND:
+            success = go_around_init(ignore_checks);
+            break;
+
         default:
             success = false;
             break;
@@ -246,6 +250,10 @@ void Copter::update_flight_mode()
             guided_nogps_run();
             break;
 
+        case GO_AROUND:
+            go_around_run();
+            break;
+
         default:
             break;
     }
@@ -313,6 +321,7 @@ bool Copter::mode_requires_GPS(control_mode_t mode)
         case BRAKE:
         case AVOID_ADSB:
         case THROW:
+        case GO_AROUND:
             return true;
         default:
             return false;
@@ -484,6 +493,9 @@ void Copter::print_flight_mode(AP_HAL::BetterStream *port, uint8_t mode)
         break;
     case GUIDED_NOGPS:
         port->printf("GUIDED_NOGPS");
+        break;
+    case GO_AROUND:
+        port->printf("GO_AROUND");
         break;
     default:
         port->printf("Mode(%u)", (unsigned)mode);

@@ -56,8 +56,9 @@ public:
     bool enabled() const { return _enabled.get(); }
 
     int8_t behaviour() const { return _enabled; }
-    float go_around_low_agl() const { return _go_around_low_agl; }
-    float go_around_high_agl() const { return _go_around_high_agl; }
+    int16_t go_around_low_agl() const { return _go_around_low_agl; }
+    int16_t go_around_high_agl() const { return _go_around_high_agl; }
+    int16_t go_around_hover_agl() const { return _go_around_hover_agl; }
     float go_around_thresh() const { return _go_around_thresh; }
 
     // returns time of last update
@@ -120,8 +121,9 @@ private:
     AP_Float                    _land_ofs_cm_y;     // Desired landing position of the camera right of the target in vehicle body frame
     AP_Float                    _accel_noise;       // accelometer process noise
     AP_Vector3f                 _cam_offset;        // Position of the camera relative to the CG
-    AP_Float                    _go_around_low_agl;
-    AP_Float                    _go_around_high_agl;
+    AP_Int16                    _go_around_low_agl;
+    AP_Int16                    _go_around_high_agl;
+    AP_Int16                    _go_around_hover_agl;
     AP_Float                    _go_around_thresh;
 
     uint32_t                    _last_update_ms;    // system time in millisecond when update was last called

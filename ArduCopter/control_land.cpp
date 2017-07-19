@@ -253,7 +253,7 @@ void Copter::land_run_horizontal_control()
         Vector2f target_pos, target_vel_rel, target_pos_rel;
         if (precland.behaviour() == 3 && rangefinder_alt_ok() && rangefinder_state.alt_cm > precland.go_around_low_agl() && rangefinder_state.alt_cm < precland.go_around_high_agl() && precland.get_target_position_relative_cm(target_pos_rel)) {
             if (target_pos_rel.x > precland.go_around_thresh() || target_pos_rel.y > precland.go_around_thresh()) {
-                set_mode(LOITER, MODE_REASON_THROTTLE_LAND_ESCAPE);
+                set_mode(GO_AROUND, MODE_REASON_GCS_COMMAND);
             }
         }
         if (!precland.get_target_position_cm(target_pos)) {

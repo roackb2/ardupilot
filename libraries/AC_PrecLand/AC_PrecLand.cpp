@@ -92,17 +92,17 @@ const AP_Param::GroupInfo AC_PrecLand::var_info[] = {
 
     // @Param: GO_ARD_L
     // @DisplayName: go-around low AGL
-    // @Description: low AGL for go-around action
+    // @Description: go-around only triggered between GO_ARD_L and GO_ARD_H
     // @User: Advanced
     // @Units: Centimeters
     AP_GROUPINFO("GO_ARD_L", 9, AC_PrecLand, _go_around_low_agl, 50.0f),
 
     // @Param: GO_ARD_H
     // @DisplayName: go-around high AGL
-    // @Description: high AGL for go-around action
+    // @Description: go-around only triggered between GO_ARD_L and GO_ARD_H
     // @User: Advanced
     // @Units: Centimeters
-    AP_GROUPINFO("GO_ARD_H", 10, AC_PrecLand, _go_around_high_agl, 300.0f),
+    AP_GROUPINFO("GO_ARD_H", 10, AC_PrecLand, _go_around_high_agl, 200.0f),
 
     // @Param: GO_ARD_TH
     // @DisplayName: go-around beacon threshold
@@ -110,6 +110,13 @@ const AP_Param::GroupInfo AC_PrecLand::var_info[] = {
     // @User: Advanced
     // @Units: Centimeters
     AP_GROUPINFO("GO_ARD_TH", 11, AC_PrecLand, _go_around_thresh, 40.0f),
+
+    // @Param: GO_ARD_HV
+    // @DisplayName: go-around hover AGL
+    // @Description: AGL that go-around will ascent to
+    // @User: Advanced
+    // @Units: Centimeters
+    AP_GROUPINFO("GO_ARD_HV", 12, AC_PrecLand, _go_around_hover_agl, 400.0f),
     
     AP_GROUPEND
 };

@@ -938,6 +938,9 @@ private:
     bool avoid_adsb_init(bool ignore_checks);
     void avoid_adsb_run();
     bool avoid_adsb_set_velocity(const Vector3f& velocity_neu);
+    
+    bool go_around_init(bool ignore_checks);
+    void go_around_run();
 
     void ekf_check();
     bool ekf_over_threshold();
