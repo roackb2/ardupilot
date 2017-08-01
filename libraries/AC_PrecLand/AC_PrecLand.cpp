@@ -95,7 +95,7 @@ const AP_Param::GroupInfo AC_PrecLand::var_info[] = {
     // @Description: go-around only triggered between GO_ARD_L and GO_ARD_H
     // @User: Advanced
     // @Units: Centimeters
-    AP_GROUPINFO("GO_ARD_L", 9, AC_PrecLand, _go_around_low_agl, 50.0f),
+    AP_GROUPINFO("GO_ARD_L", 9, AC_PrecLand, _go_around_low_agl, 100.0f),
 
     // @Param: GO_ARD_H
     // @DisplayName: go-around high AGL
