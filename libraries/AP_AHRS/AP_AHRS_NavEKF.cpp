@@ -830,10 +830,12 @@ bool AP_AHRS_NavEKF::get_relative_position_NE_home(Vector2f &posNE) const
         return false;
     }
 
+    //hal.console->printf("chobits2: origin: %d %d home: %d %d\n", originLLH.lat, originLLH.lng, _home.lat, _home.lng);
+
     Vector2f offset = location_diff(originLLH, _home);
 
-    posNE.x = originNE.x + offset.x;
-    posNE.y = originNE.y + offset.y;
+    posNE.x = originNE.x - offset.x;
+    posNE.y = originNE.y - offset.y;
     return true;
 }
 
