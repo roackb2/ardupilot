@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <AP_HAL/AP_HAL.h>
 #include "AC_PrecLand.h"
 #include "AC_PrecLand_Backend.h"
@@ -5,6 +6,7 @@
 #include "AC_PrecLand_IRLock.h"
 #include "AC_PrecLand_SITL_Gazebo.h"
 #include "AC_PrecLand_SITL.h"
+#include "AC_PrecLand_RTK.h"
 
 extern const AP_HAL::HAL& hal;
 
@@ -146,6 +148,9 @@ void AC_PrecLand::init()
             _backend = new AC_PrecLand_SITL(*this, _backend_state);
             break;
 #endif
+        case PRECLAND_TYPE_RTK:
+            _backend = new AC_PrecLand_RTK(*this, _backend_state);
+            break;
     }
 
     // init backend
@@ -337,7 +342,25 @@ bool AC_PrecLand::retrieve_los_meas(Vector3f& target_vec_unit_body)
 bool AC_PrecLand::construct_pos_meas_using_rangefinder(float rangefinder_alt_m, bool rangefinder_alt_valid)
 {
     Vector3f target_vec_unit_body;
-    if (retrieve_los_meas(target_vec_unit_body)) {
+    Vector2f cur_pos;
+    if (_type == 5) {
+        bool alt_valid = (rangefinder_alt_valid && rangefinder_alt_m > 0.0f);
+        //_ahrs.get_relative_position_NE_home(cur_pos);
+        //hal.console->printf("chobits2: %f %f\n", cur_pos.x, cur_pos.y);
+        if (alt_valid) {
+            float alt = MAX(rangefinder_alt_m, 0.0f);
+            if (_ahrs.get_relative_position_NE_home(cur_pos)) {
+                //::printf("chobits: %f %f\n", cur_pos.x, cur_pos.y);
+                //hal.console->printf("chobits2: %f %f\n", cur_pos.x, cur_pos.y);
+                _target_pos_rel_meas_NED.x = -cur_pos.x;
+                _target_pos_rel_meas_NED.y = -cur_pos.y;
+                _target_pos_rel_meas_NED.z = alt;
+                return true;
+            } else {
+                return false;
+            }
+        }
+    } else if (retrieve_los_meas(target_vec_unit_body)) {
         const struct inertial_data_frame_s& inertial_data_delayed = _inertial_history.front();
 
         Vector3f target_vec_unit_ned = inertial_data_delayed.Tbn * target_vec_unit_body;
