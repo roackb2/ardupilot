@@ -1171,6 +1171,9 @@ void GCS_MAVLINK_Copter::handleMessage(mavlink_message_t* msg)
                 if (copter.set_home_to_current_location_and_lock()) {
                     result = MAV_RESULT_ACCEPTED;
                 }
+            } else if (is_equal(packet.param1,2.0f)) {
+                copter.set_home_state(HOME_SET_NOT_LOCKED);
+                result = MAV_RESULT_ACCEPTED;
             } else {
                 // sanity check location
                 if (!check_latlng(packet.param5, packet.param6)) {
