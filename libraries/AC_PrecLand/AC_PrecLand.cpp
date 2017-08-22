@@ -138,6 +138,7 @@ void AC_PrecLand::init()
             break;
         // IR Lock
         case PRECLAND_TYPE_IRLOCK:
+        case PRECLAND_TYPE_IRLOCK_RTK:
             _backend = new AC_PrecLand_IRLock(*this, _backend_state);
             break;
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
@@ -343,7 +344,7 @@ bool AC_PrecLand::construct_pos_meas_using_rangefinder(float rangefinder_alt_m, 
 {
     Vector3f target_vec_unit_body;
     Vector2f cur_pos;
-    if (_type == 5) {
+    if (_type == PRECLAND_TYPE_RTK) {
         bool alt_valid = (rangefinder_alt_valid && rangefinder_alt_m > 0.0f);
         //_ahrs.get_relative_position_NE_home(cur_pos);
         //hal.console->printf("chobits2: %f %f\n", cur_pos.x, cur_pos.y);
@@ -356,8 +357,6 @@ bool AC_PrecLand::construct_pos_meas_using_rangefinder(float rangefinder_alt_m, 
                 _target_pos_rel_meas_NED.y = -cur_pos.y;
                 _target_pos_rel_meas_NED.z = alt;
                 return true;
-            } else {
-                return false;
             }
         }
     } else if (retrieve_los_meas(target_vec_unit_body)) {
@@ -383,6 +382,17 @@ bool AC_PrecLand::construct_pos_meas_using_rangefinder(float rangefinder_alt_m, 
             // Compute target position relative to IMU
             _target_pos_rel_meas_NED = Vector3f(target_vec_unit_ned.x*dist, target_vec_unit_ned.y*dist, alt) + cam_pos_ned;
             return true;
+        }
+    } else if (_type == PRECLAND_TYPE_IRLOCK_RTK) {
+        bool alt_valid = (rangefinder_alt_valid && rangefinder_alt_m > 0.0f);
+        if (alt_valid) {
+            float alt = MAX(rangefinder_alt_m, 0.0f);
+            if (_ahrs.get_relative_position_NE_home(cur_pos)) {
+                _target_pos_rel_meas_NED.x = -cur_pos.x;
+                _target_pos_rel_meas_NED.y = -cur_pos.y;
+                _target_pos_rel_meas_NED.z = alt;
+                return true;
+            }
         }
     }
     return false;

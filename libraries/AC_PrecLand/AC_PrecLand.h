@@ -42,7 +42,8 @@ public:
         PRECLAND_TYPE_IRLOCK,
         PRECLAND_TYPE_SITL_GAZEBO,
         PRECLAND_TYPE_SITL,
-        PRECLAND_TYPE_RTK
+        PRECLAND_TYPE_RTK,
+        PRECLAND_TYPE_IRLOCK_RTK
     };
 
     // constructor
