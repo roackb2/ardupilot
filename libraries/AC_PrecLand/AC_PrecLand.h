@@ -15,6 +15,7 @@ class AC_PrecLand_IRLock;
 class AC_PrecLand_SITL_Gazebo;
 class AC_PrecLand_SITL;
 class AC_PrecLand_RTK;
+class AC_PrecLand_IRLock_RTK;
 
 class AC_PrecLand
 {
@@ -25,6 +26,7 @@ class AC_PrecLand
     friend class AC_PrecLand_SITL_Gazebo;
     friend class AC_PrecLand_SITL;
     friend class AC_PrecLand_RTK;
+    friend class AC_PrecLand_IRLock_RTK;
 
 public:
 

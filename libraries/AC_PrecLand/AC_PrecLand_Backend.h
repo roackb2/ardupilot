@@ -41,6 +41,8 @@ public:
 
     // get bus parameter
     int8_t get_bus(void) const { return _frontend._bus.get(); }
+
+    virtual bool alternative() { return false; }
     
 protected:
     const AC_PrecLand&  _frontend;          // reference to precision landing front end
