@@ -347,7 +347,7 @@ bool AC_PrecLand::construct_pos_meas_using_rangefinder(float rangefinder_alt_m, 
 {
     Vector3f target_vec_unit_body;
     Vector2f cur_pos;
-    if (_type == PRECLAND_TYPE_RTK  || (_type == PRECLAND_TYPE_IRLOCK_RTK && _backend->alternative())) {
+    if ((_type == PRECLAND_TYPE_RTK)  || ((_type == PRECLAND_TYPE_IRLOCK_RTK) && _backend->alternative())) {
         bool alt_valid = (rangefinder_alt_valid && rangefinder_alt_m > 0.0f);
         if (alt_valid) {
             float alt = MAX(rangefinder_alt_m, 0.0f);
