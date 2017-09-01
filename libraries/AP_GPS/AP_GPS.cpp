@@ -683,6 +683,20 @@ void AP_GPS::update(void)
                     if (i == primary_instance) {
                         continue;
                     }
+
+                    if (_auto_switch == 3) {
+                       //chobits: ublox is more reliable than reach. so switch to ublox if their location diff too much
+                       if (i == 0 && state[0].status > 2 && state[1].status > 4 &&
+                           (abs(state[0].location.lat - state[1].location.lat) > 2000 || abs(state[0].location.lng - state[1].location.lng) > 2000)) {
+                           primary_instance = i;
+                           _last_instance_swap_ms = now;
+                           continue;                           
+                       }
+                       //chobits: prevent switch to reach when reach and ublox diff too much
+                       if (i == 1 && state[0].status > 2 && state[1].status > 4 &&
+                           (abs(state[0].location.lat - state[1].location.lat) > 1000 || abs(state[0].location.lng - state[1].location.lng) > 1000)) continue;
+                    }
+
                     if (state[i].status > state[primary_instance].status) {
                         // we have a higher status lock, or primary is set to the blended GPS, change GPS
                         primary_instance = i;
