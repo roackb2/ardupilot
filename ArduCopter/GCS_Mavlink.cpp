@@ -1366,6 +1366,17 @@ void GCS_MAVLINK_Copter::handleMessage(mavlink_message_t* msg)
             }
             break;
 
+        case MAV_CMD_DO_GO_AROUND: {
+            float go_around_alt_m = 3.0f; //@magicrub: use meters when using floats. use SI units (meters) wherever possible.
+            if (packet.param1 > 0) go_around_alt_m = packet.param1; //if GCS send go_around with 0 param1, we climb to 3m above cur alt
+            if (copter.do_user_go_around(go_around_alt_m)) {
+                result = MAV_RESULT_ACCEPTED;
+            } else {
+                result = MAV_RESULT_FAILED;
+            }
+            break;
+        }
+
         case MAV_CMD_DO_FENCE_ENABLE:
 #if AC_FENCE == ENABLED
             result = MAV_RESULT_ACCEPTED;

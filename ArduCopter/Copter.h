@@ -852,6 +852,7 @@ private:
     void flip_run();
     bool guided_init(bool ignore_checks);
     bool guided_takeoff_start(float final_alt_above_home);
+    bool guided_go_around_start(float go_around_alt_delta_m);
     void guided_pos_control_start();
     void guided_vel_control_start();
     void guided_posvel_control_start();
@@ -1084,6 +1085,7 @@ private:
     const char* get_frame_string();
     bool current_mode_has_user_takeoff(bool must_navigate);
     bool do_user_takeoff(float takeoff_alt_cm, bool must_navigate);
+    bool do_user_go_around(float go_around_alt_delta_m);
     void takeoff_timer_start(float alt_cm);
     void takeoff_stop();
     void takeoff_get_climb_rates(float& pilot_climb_rate, float& takeoff_climb_rate);
