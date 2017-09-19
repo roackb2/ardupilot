@@ -43,6 +43,7 @@
 ///
 #pragma once
 
+#include <limits.h>
 #include "AP_GPS.h"
 #include "GPS_Backend.h"
 
@@ -70,6 +71,8 @@ private:
         _GPS_SENTENCE_RMC = 32,
         _GPS_SENTENCE_GGA = 64,
         _GPS_SENTENCE_VTG = 96,
+        _GPS_SENTENCE_SKYTRAQ = 128, 
+        _GPS_SENTENCE_SKYTRAQ030 = 130,
         _GPS_SENTENCE_OTHER = 0
     };
 
@@ -95,6 +98,8 @@ private:
     ///					multiplied by 100.
     ///
     static int32_t _parse_decimal_100(const char *p);
+
+    static uint32_t _parse_decimal_1000(const char *p);
 
     /// Parses the current term as a NMEA-style degrees + minutes
     /// value with up to four decimal digits.
@@ -140,6 +145,7 @@ private:
     uint16_t _new_hdop;                                                 ///< HDOP parsed from a term
     uint8_t _new_satellite_count;                       ///< satellite count parsed from a term
     uint8_t _new_quality_indicator;                                     ///< GPS quality indicator parsed from a term
+    uint32_t _new_rtk_age_ms = UINT_MAX; 
 
     uint32_t _last_RMC_ms = 0;
     uint32_t _last_GGA_ms = 0;

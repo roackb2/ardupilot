@@ -212,6 +212,30 @@ int32_t AP_GPS_NMEA::_parse_decimal_100(const char *p)
     return ret;
 }
 
+uint32_t AP_GPS_NMEA::_parse_decimal_1000(const char *p)
+{
+    char *endptr = nullptr;
+    unsigned long ret = 1000 * strtoul(p, &endptr, 10);
+
+    if (ret >= (unsigned long)UINT_MAX) {
+        return UINT_MAX;
+    }
+    if (endptr == nullptr || *endptr != '.') {
+        return ret;
+    }
+
+    if (isdigit(endptr[1])) {
+        ret += 10 * DIGIT_TO_VAL(endptr[1]);
+        if (isdigit(endptr[2])) {
+            ret += DIGIT_TO_VAL(endptr[2]);
+            if (isdigit(endptr[3])) {
+                ret += (DIGIT_TO_VAL(endptr[3]) >= 5);
+            }
+        }
+    }
+    return ret;
+}
+
 /*
   parse a NMEA latitude/longitude degree value. The result is in degrees*1e7
  */
@@ -314,6 +338,7 @@ bool AP_GPS_NMEA::_term_complete()
                     state.location.lng  = _new_longitude;
                     state.num_sats      = _new_satellite_count;
                     state.hdop          = _new_hdop;
+                    state.rtk_age_ms    = _new_rtk_age_ms;
                     switch(_new_quality_indicator) {
                     case 0: // Fix not available or invalid
                         state.status = AP_GPS::NO_FIX;
@@ -387,6 +412,8 @@ bool AP_GPS_NMEA::_term_complete()
             // VTG may not contain a data qualifier, presume the solution is good
             // unless it tells us otherwise.
             _gps_data_good = true;
+        } else if (strcmp(term_type, "TI") == 0) { //SkyTraq propietary
+            _sentence_type = _GPS_SENTENCE_SKYTRAQ;
         } else {
             _sentence_type = _GPS_SENTENCE_OTHER;
         }
@@ -459,6 +486,16 @@ bool AP_GPS_NMEA::_term_complete()
         case _GPS_SENTENCE_VTG + 1: // Course (VTG)
             _new_course = _parse_decimal_100(_term);
             break;
+        
+        case _GPS_SENTENCE_SKYTRAQ + 1:
+            if (_term[1] == '3' && _term[2] == '0') _sentence_type = _GPS_SENTENCE_SKYTRAQ030; else _sentence_type = _GPS_SENTENCE_OTHER;
+            break;
+        case _GPS_SENTENCE_SKYTRAQ030 + 14:
+            _new_rtk_age_ms = _parse_decimal_1000(_term);            
+            break;
+        //case _GPS_SENTENCE_GGA + 11: // Age of Differential GPS data, in second
+        //    _new_rtk_age_ms = _parse_decimal_1000(_term);
+        //    break;
         }
     }
 

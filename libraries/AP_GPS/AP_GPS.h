@@ -141,6 +141,7 @@ public:
         bool have_horizontal_accuracy:1;    ///< does GPS give horizontal position accuracy? Set to true only once available.
         bool have_vertical_accuracy:1;      ///< does GPS give vertical position accuracy? Set to true only once available.
         uint32_t last_gps_time_ms;          ///< the system time we got the last GPS timestamp, milliseconds
+        uint32_t rtk_age_ms;
     };
 
     /// Startup initialisation.
@@ -302,6 +303,10 @@ public:
     }
     bool have_vertical_velocity(void) const {
         return have_vertical_velocity(primary_instance);
+    }
+
+    uint32_t rtk_age_ms(uint8_t instance) const {
+        return state[instance].rtk_age_ms;
     }
 
     // the expected lag (in seconds) in the position and velocity readings from the gps
