@@ -976,8 +976,8 @@ void AP_GPS::handle_gps_rtcm_data(const mavlink_message_t *msg)
         }
     }
 
-    uint8_t fragment = (packet.flags >> 1U) & 0x03;
-    uint8_t sequence = (packet.flags >> 3U) & 0x1F;
+    uint8_t fragment = (packet.flags >> 1U) & 0x04;
+    uint8_t sequence = (packet.flags >> 4U) & 0x0F;
 
     // see if this fragment is consistent with existing fragments
     if (rtcm_buffer->fragments_received &&
@@ -1002,10 +1002,10 @@ void AP_GPS::handle_gps_rtcm_data(const mavlink_message_t *msg)
     if (packet.len < MAVLINK_MSG_GPS_RTCM_DATA_FIELD_DATA_LEN) {
         rtcm_buffer->fragment_count = fragment+1;
         rtcm_buffer->total_length = (MAVLINK_MSG_GPS_RTCM_DATA_FIELD_DATA_LEN*fragment) + packet.len;
-    } else if (rtcm_buffer->fragments_received == 0x0F) {
-        // special case of 4 full fragments
-        rtcm_buffer->fragment_count = 4;
-        rtcm_buffer->total_length = MAVLINK_MSG_GPS_RTCM_DATA_FIELD_DATA_LEN*4;
+    } else if (rtcm_buffer->fragments_received == 0x1F) {
+        // special case of 5 full fragments
+        rtcm_buffer->fragment_count = 5;
+        rtcm_buffer->total_length = MAVLINK_MSG_GPS_RTCM_DATA_FIELD_DATA_LEN*5;
     }
 
 
