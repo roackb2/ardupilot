@@ -976,7 +976,7 @@ void AP_GPS::handle_gps_rtcm_data(const mavlink_message_t *msg)
         }
     }
 
-    uint8_t fragment = (packet.flags >> 1U) & 0x04;
+    uint8_t fragment = (packet.flags >> 1U) & 0x07;
     uint8_t sequence = (packet.flags >> 4U) & 0x0F;
 
     // see if this fragment is consistent with existing fragments
