@@ -55,6 +55,26 @@ bool Copter::do_user_takeoff(float takeoff_alt_cm, bool must_navigate)
     return false;
 }
 
+bool Copter::do_user_go_around(float go_around_alt_delta_m) 
+{
+    if (motors->armed() && control_mode == LAND) {
+        if (prev_control_mode == AUTO || prev_control_mode == GUIDED) {
+            if (set_mode(GUIDED, MODE_REASON_GCS_COMMAND)) {
+                guided_go_around_start(go_around_alt_delta_m);
+                return true;
+            }
+            return false;
+        } else {
+            if (set_mode(LOITER, MODE_REASON_GCS_COMMAND)) {
+                takeoff_timer_start(go_around_alt_delta_m * 100.0f);
+                return true;
+            }
+            return false;
+        }
+    }
+    return false;
+}
+
 // start takeoff to specified altitude above home in centimeters
 void Copter::takeoff_timer_start(float alt_cm)
 {

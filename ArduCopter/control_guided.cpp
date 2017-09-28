@@ -78,6 +78,35 @@ bool Copter::guided_takeoff_start(float final_alt_above_home)
     return true;
 }
 
+bool Copter::guided_go_around_start(float go_around_alt_delta_m)
+{
+    guided_mode = Guided_TakeOff;
+
+    // initialise wpnav destination
+    Location_Class target_loc = current_loc;
+    int32_t abs_alt_cm;
+    if (target_loc.get_alt_cm(Location_Class::ALT_FRAME_ABSOLUTE, abs_alt_cm) == false) return false;
+    target_loc.set_alt_cm(abs_alt_cm + go_around_alt_delta_m * 100.0f, Location_Class::ALT_FRAME_ABSOLUTE);
+
+    if (!wp_nav->set_wp_destination(target_loc)) {
+        // failure to set destination can only be because of missing terrain data
+        Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_FAILED_TO_SET_DESTINATION);
+        // failure is propagated to GCS with NAK
+        return false;
+    }
+
+    // initialise yaw
+    set_auto_yaw_mode(AUTO_YAW_HOLD);
+
+    // clear i term when we're taking off
+    set_throttle_takeoff();
+
+    // get initial alt for WP_NAVALT_MIN
+    auto_takeoff_set_start_alt();
+
+    return true;
+}
+
 // initialise guided mode's position controller
 void Copter::guided_pos_control_start()
 {
