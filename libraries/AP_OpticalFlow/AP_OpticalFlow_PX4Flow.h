@@ -19,6 +19,8 @@ public:
     // detect if the sensor is available
     static AP_OpticalFlow_PX4Flow *detect(OpticalFlow &_frontend);
 
+    static std::atomic<uint16_t> ground_distance;
+
 private:
     AP_HAL::OwnPtr<AP_HAL::Device> dev;
 
