@@ -461,11 +461,11 @@ private:
       in a RTCM data block
      */
     struct rtcm_buffer {
-        uint8_t fragments_received;
-        uint8_t sequence;
+        uint8_t fragments_received:4;
+        uint8_t sequence:5;
         uint8_t fragment_count;
         uint16_t total_length;
-        uint8_t buffer[MAVLINK_MSG_GPS_RTCM_DATA_FIELD_DATA_LEN*5];
+        uint8_t buffer[MAVLINK_MSG_GPS_RTCM_DATA_FIELD_DATA_LEN*4];
     } *rtcm_buffer;
 
     // re-assemble GPS_RTCM_DATA message
