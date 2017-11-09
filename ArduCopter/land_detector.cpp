@@ -40,6 +40,9 @@ void Copter::update_land_detector()
     // range finder :                       tend to be problematic at very short distances
     // input throttle :                     in slow land the input throttle may be only slightly less than hover
 
+    int land_proximity = hal.gpio->read(54);
+    //if (land_proximity == 0) hal.console->printf("chobits: landed");
+
     if (!motors->armed()) {
         // if disarmed, always landed.
         set_land_complete(true);
@@ -85,7 +88,7 @@ void Copter::update_land_detector()
         }
     }
 
-    set_land_complete_maybe(ap.land_complete || (land_detector_count >= LAND_DETECTOR_MAYBE_TRIGGER_SEC*scheduler.get_loop_rate_hz()));
+    set_land_complete_maybe(ap.land_complete || (land_detector_count >= LAND_DETECTOR_MAYBE_TRIGGER_SEC*scheduler.get_loop_rate_hz()) || (land_proximity == 0));
 }
 
 // set land_complete flag and disarm motors if disarm-on-land is configured

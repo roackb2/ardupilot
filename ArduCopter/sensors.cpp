@@ -1,5 +1,12 @@
 #include "Copter.h"
 
+void Copter::init_land_proximity()
+{
+    hal.gpio->pinMode(54, HAL_GPIO_INPUT);
+    // setup pullup
+    hal.gpio->write(54, 1);
+}
+
 void Copter::init_barometer(bool full_calibration)
 {
     gcs_send_text(MAV_SEVERITY_INFO, "Calibrating barometer");

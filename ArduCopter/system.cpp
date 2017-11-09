@@ -273,6 +273,8 @@ void Copter::init_ardupilot()
     ins.set_hil_mode();
 #endif
 
+    init_land_proximity();
+
     // read Baro pressure at ground
     //-----------------------------
     init_barometer(true);
