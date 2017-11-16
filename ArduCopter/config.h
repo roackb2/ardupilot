@@ -329,7 +329,7 @@
  # define LAND_CANCEL_TRIGGER_THR   700     // land is cancelled by input throttle above 700
 #endif
 #ifndef LAND_RANGEFINDER_MIN_ALT_CM
-#define LAND_RANGEFINDER_MIN_ALT_CM 200
+#define LAND_RANGEFINDER_MIN_ALT_CM 50
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
