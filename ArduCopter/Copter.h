@@ -92,6 +92,7 @@
 #include <AP_Button/AP_Button.h>
 #include <AP_Arming/AP_Arming.h>
 #include <AP_VisualOdom/AP_VisualOdom.h>
+#include <AC_LandProximity/AC_LandProximity.h>
 
 // Configuration
 #include "defines.h"
@@ -202,6 +203,8 @@ private:
         LowPassFilterFloat alt_cm_filt; // altitude filter
         int8_t glitch_count;
     } rangefinder_state = { false, false, 0, 0 };
+
+    AC_LandProximity land_proximity;
 
     AP_RPM rpm_sensor;
 
