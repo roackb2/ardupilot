@@ -2,9 +2,10 @@
 
 void Copter::init_land_proximity()
 {
-    hal.gpio->pinMode(54, HAL_GPIO_INPUT);
+    //hal.gpio->pinMode(54, HAL_GPIO_INPUT);
     // setup pullup
-    hal.gpio->write(54, 1);
+    //hal.gpio->write(54, 1);
+    land_proximity.init();
 }
 
 void Copter::init_barometer(bool full_calibration)

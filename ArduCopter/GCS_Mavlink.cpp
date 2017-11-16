@@ -3,6 +3,8 @@
 
 #include "GCS_Mavlink.h"
 
+static bool prv_proximity = false;
+
 void Copter::gcs_send_heartbeat(void)
 {
     gcs_send_message(MSG_HEARTBEAT);
@@ -29,6 +31,16 @@ NOINLINE void Copter::send_heartbeat(mavlink_channel_t chan)
     uint8_t base_mode = MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
     uint8_t system_status = ap.land_complete ? MAV_STATE_STANDBY : MAV_STATE_ACTIVE;
     uint32_t custom_mode = control_mode;
+
+    //if (land_proximity.proximity) hal.console->printf("close\n"); else hal.console->printf("away\n");
+    if (land_proximity.proximity != prv_proximity) {
+        if (land_proximity.proximity) {
+            GCS_MAVLINK::send_statustext_chan(MAV_SEVERITY_INFO, chan, "ground");
+        } else {
+            GCS_MAVLINK::send_statustext_chan(MAV_SEVERITY_INFO, chan, "away");
+        }
+    }
+    prv_proximity = land_proximity.proximity;
 
     // set system as critical if any failsafe have triggered
     if (failsafe.radio || failsafe.battery || failsafe.gcs || failsafe.ekf || failsafe.terrain || failsafe.adsb)  {

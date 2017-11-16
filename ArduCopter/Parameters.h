@@ -160,6 +160,8 @@ public:
         k_param_single_servo_3,         // remove
         k_param_single_servo_4,         // 78 - remove
 
+        k_param_land_proximity = 79,      
+
         //
         // 80: Heli
         //
