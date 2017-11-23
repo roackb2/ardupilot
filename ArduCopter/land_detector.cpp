@@ -40,7 +40,7 @@ void Copter::update_land_detector()
     // range finder :                       tend to be problematic at very short distances
     // input throttle :                     in slow land the input throttle may be only slightly less than hover
 
-    int land_proximity_val = hal.gpio->read(54);
+    //int land_proximity_val = hal.gpio->read(54);
     //if (land_proximity == 0) hal.console->printf("chobits: landed");
 
     if (!motors->armed()) {
@@ -75,7 +75,7 @@ void Copter::update_land_detector()
         // if we have a healthy rangefinder only allow landing detection below 2 meters
         bool rangefinder_check = (!rangefinder_alt_ok() || rangefinder_state.alt_cm_filt.get() < LAND_RANGEFINDER_MIN_ALT_CM);
 
-        if (motor_at_lower_limit && (accel_stationary || (land_proximity_val == 0)) && descent_rate_low && rangefinder_check) {
+        if (((motor_at_lower_limit && accel_stationary && descent_rate_low) || land_proximity.proximity) && rangefinder_check) {
             // landed criteria met - increment the counter and check if we've triggered
             if( land_detector_count < ((float)LAND_DETECTOR_TRIGGER_SEC)*scheduler.get_loop_rate_hz()) {
                 land_detector_count++;
@@ -88,7 +88,7 @@ void Copter::update_land_detector()
         }
     }
 
-    set_land_complete_maybe(ap.land_complete || (land_detector_count >= LAND_DETECTOR_MAYBE_TRIGGER_SEC*scheduler.get_loop_rate_hz()) || (land_proximity_val == 0));
+    set_land_complete_maybe(ap.land_complete || (land_detector_count >= LAND_DETECTOR_MAYBE_TRIGGER_SEC*scheduler.get_loop_rate_hz()) || land_proximity.proximity);
 }
 
 // set land_complete flag and disarm motors if disarm-on-land is configured
