@@ -56,6 +56,17 @@
 
 extern const AP_HAL::HAL &hal;
 
+const AP_Param::GroupInfo AC_LandProximity::var_info[] = {
+    // @Param: ENABLED
+    // @DisplayName: enable land proximity
+    // @Description: enable land proximity
+    // @Values: 0:Disabled, 1:Enabled
+    // @User: Advanced
+    AP_GROUPINFO_FLAGS("ENABLED", 0, AC_LandProximity, _enabled, 0, AP_PARAM_FLAG_ENABLE),
+
+    AP_GROUPEND
+};
+
 AC_LandProximity::AC_LandProximity()
 {
 }
@@ -242,11 +253,17 @@ void AC_LandProximity::timer() {
     uint8_t send = APDS9930_PDATAL | AUTO_INCREMENT;
     uint8_t val;
     uint16_t val_word;
+    if (!_enabled) {
+        proximity_val =0;
+        proximity = false;
+        return;
+    }
     if (!_dev->transfer(&send, 1, &val, 1)) return;
     val_word = val;
     send = APDS9930_PDATAH | AUTO_INCREMENT;
     if (!_dev->transfer(&send, 1, &val, 1)) return;
     val_word += ((uint16_t)val << 8);
+    proximity_val = val_word;
     if (val_word > 900) proximity = true; else proximity = false;
 }
 
