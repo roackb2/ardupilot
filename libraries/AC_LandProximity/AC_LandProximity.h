@@ -62,9 +62,11 @@ class AC_LandProximity
 {
 public:
     AC_LandProximity();
+    bool enabled() { return _enabled; }
+
     void init();
     bool proximity;
-    uint16_t proximity_val;
+    //uint16_t proximity_val;
     
     static const struct AP_Param::GroupInfo var_info[];
 private:

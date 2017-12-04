@@ -171,13 +171,13 @@ void AC_LandProximity::timer() {
 */
     uint8_t send = APDS9930_STATUS | AUTO_INCREMENT;
     uint8_t val;
-    proximity_val = 0;
+    //proximity_val = 0;
     proximity = false;
     if (!_enabled) return;
     if (!_dev->transfer(&send, 1, &val, 1)) return;
     if (val & 0x20) {
         proximity = true;
-        proximity_val = 1;
+        //proximity_val = 1;
         send = CLEAR_PROX_INT;
         _dev->transfer(&send, 1, 0, 0);
     }
