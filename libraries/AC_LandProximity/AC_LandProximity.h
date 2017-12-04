@@ -55,8 +55,8 @@
 #define DEFAULT_PGAIN           1
 #define DEFAULT_AGAIN           0
 #define DEFAULT_PILT            0       // Low proximity threshold
-#define DEFAULT_PIHT            100      // High proximity threshold
-#define DEFAULT_PERS            0x99
+#define DEFAULT_PIHT            200      // High proximity threshold
+#define DEFAULT_PPERS           0x9
 
 class AC_LandProximity
 {
@@ -84,4 +84,7 @@ private:
     void timer();
     
     AP_Int8 _enabled;
+    AP_Int16 _thd;
+    AP_Int8 _pers;
+    AP_Int8 _gain;
 };

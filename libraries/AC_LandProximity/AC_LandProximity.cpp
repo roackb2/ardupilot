@@ -5,10 +5,24 @@ extern const AP_HAL::HAL &hal;
 const AP_Param::GroupInfo AC_LandProximity::var_info[] = {
     // @Param: ENABLED
     // @DisplayName: enable land proximity
-    // @Description: enable land proximity
     // @Values: 0:Disabled, 1:Enabled
     // @User: Advanced
     AP_GROUPINFO_FLAGS("ENABLED", 0, AC_LandProximity, _enabled, 0, AP_PARAM_FLAG_ENABLE),
+
+    // @Param: THRESHOLD
+    // @DisplayName: proximity threshold
+    // @User: Advanced
+    AP_GROUPINFO("THRESHOLD", 1, AC_LandProximity, _thd, DEFAULT_PIHT),
+
+    // @Param: GAIN
+    // @DisplayName: proximity gain
+    // @User: Advanced
+    AP_GROUPINFO("GAIN", 2, AC_LandProximity, _gain, DEFAULT_PGAIN),
+
+    // @Param: PERSISTENCE
+    // @DisplayName: proximity persistence
+    // @User: Advanced
+    AP_GROUPINFO("PERSISTENCE", 3, AC_LandProximity, _pers, DEFAULT_PPERS),
 
     AP_GROUPEND
 };
@@ -133,7 +147,7 @@ bool AC_LandProximity::setProximityDiode(uint8_t drive)
 bool AC_LandProximity::enableProximitySensor()
 {
     /* Set default gain, LED, interrupts, enable power, and enable sensor */
-    if( !setProximityGain(DEFAULT_PGAIN) ) {
+    if( !setProximityGain(_gain) ) {
         return false;
     }
     if( !setLEDDrive(DEFAULT_PDRIVE) ) {
@@ -236,11 +250,11 @@ void AC_LandProximity::init()
             _dev->get_semaphore()->give();
             return;
         }
-        if( !setProximityIntHighThreshold(DEFAULT_PIHT) ) {
+        if( !setProximityIntHighThreshold(_thd) ) {
             _dev->get_semaphore()->give();
             return;
         }
-        if( !_dev->write_register(APDS9930_PERS | AUTO_INCREMENT, DEFAULT_PERS) ) {
+        if( !_dev->write_register(APDS9930_PERS | AUTO_INCREMENT, _pers << 4) ) {
             _dev->get_semaphore()->give();
             return;
         }
