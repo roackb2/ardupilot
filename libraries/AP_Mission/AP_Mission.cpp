@@ -578,6 +578,9 @@ MAV_MISSION_RESULT AP_Mission::mavlink_int_to_mission_cmd(const mavlink_mission_
 {
     bool copy_location = false;
     bool copy_alt = false;
+#if APM_BUILD_TYPE(APM_BUILD_ArduCopter)
+    bool local_frame_supported = false;
+#endif
 
     // command's position in mission list and mavlink id
     cmd.index = packet.seq;
@@ -598,6 +601,9 @@ MAV_MISSION_RESULT AP_Mission::mavlink_int_to_mission_cmd(const mavlink_mission_
         
     case MAV_CMD_NAV_WAYPOINT:                          // MAV ID: 16
     {
+#if APM_BUILD_TYPE(APM_BUILD_ArduCopter)
+        local_frame_supported = true;
+#endif
         copy_location = true;
         /*
           the 15 byte limit means we can't fit both delay and radius
@@ -655,6 +661,9 @@ MAV_MISSION_RESULT AP_Mission::mavlink_int_to_mission_cmd(const mavlink_mission_
         break;
 
     case MAV_CMD_NAV_TAKEOFF:                           // MAV ID: 22
+#if APM_BUILD_TYPE(APM_BUILD_ArduCopter)
+        local_frame_supported = true;
+#endif
         copy_location = true;                           // only altitude is used
         cmd.p1 = packet.param1;                         // minimum pitch (plane only)
         break;
@@ -889,7 +898,15 @@ MAV_MISSION_RESULT AP_Mission::mavlink_int_to_mission_cmd(const mavlink_mission_
         cmd.content.location.alt = packet.z * 100.0f;       // convert packet's alt (m) to cmd alt (cm)
 
         switch (packet.frame) {
-
+#if APM_BUILD_TYPE(APM_BUILD_ArduCopter)
+        case MAV_FRAME_LOCAL_NED:
+            if (local_frame_supported) {
+                cmd.content.location.flags.local_frame = 1;
+            } else {
+                return MAV_MISSION_UNSUPPORTED_FRAME;
+            }
+            break;
+#endif
         case MAV_FRAME_MISSION:
         case MAV_FRAME_GLOBAL:
             cmd.content.location.flags.relative_alt = 0;
@@ -951,16 +968,22 @@ MAV_MISSION_RESULT AP_Mission::mavlink_to_mission_cmd(const mavlink_mission_item
         break;
 
     default:
-        // all other commands use x and y as lat/lon. We need to
-        // multiply by 1e7 to convert to int32_t
-        if (!check_lat(packet.x)) {
-            return MAV_MISSION_INVALID_PARAM5_X;
+        if (packet.frame == MAV_FRAME_LOCAL_NED) {
+            //mavlink spec MISSION_ITEM_INT states local: position in meters * 1e4"
+            mav_cmd.x = packet.x * 10000;
+            mav_cmd.y = packet.y * 10000;
+        } else {
+            // all other commands use x and y as lat/lon. We need to
+            // multiply by 1e7 to convert to int32_t
+            if (!check_lat(packet.x)) {
+                return MAV_MISSION_INVALID_PARAM5_X;
+            }
+            if (!check_lng(packet.y)) {
+                return MAV_MISSION_INVALID_PARAM6_Y;
+            }
+            mav_cmd.x = packet.x * 1.0e7f;
+            mav_cmd.y = packet.y * 1.0e7f;
         }
-        if (!check_lng(packet.y)) {
-            return MAV_MISSION_INVALID_PARAM6_Y;
-        }
-        mav_cmd.x = packet.x * 1.0e7f;
-        mav_cmd.y = packet.y * 1.0e7f;
         break;
     }
     
