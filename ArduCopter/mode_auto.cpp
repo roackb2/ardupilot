@@ -138,9 +138,14 @@ void Copter::ModeAuto::takeoff_start(const Location& dest_loc)
     _mode = Auto_TakeOff;
 
     if (dest_loc.flags.local_frame) {
+        float dest_alt = dest_loc.alt;
         const Vector3f& curr_pos = inertial_nav.get_position();
+        //you can't go lower than you currently are and you can't takeoff to less than 100cm above
+        if (dest_loc.alt < curr_pos.z || ((dest_loc.alt - curr_pos.z) < 100)) {
+            dest_alt = curr_pos.z + 100;
+        }
         // no need to check return status because terrain data is not used
-        wp_nav->set_wp_destination(Vector3f(curr_pos.x, curr_pos.y, -dest_loc.alt), false); 
+        wp_nav->set_wp_destination(Vector3f(curr_pos.x, curr_pos.y, dest_alt), false);
     } else {
         // convert location to class
         Location_Class dest(dest_loc);
@@ -1076,7 +1081,13 @@ void Copter::ModeAuto::do_nav_wp(const AP_Mission::Mission_Command& cmd)
     loiter_time_max = cmd.p1;
 
     if (cmd.content.location.flags.local_frame) {
-        wp_start(Vector3f(cmd.content.location.lat * 0.01f, cmd.content.location.lng * 0.01f, -cmd.content.location.alt));
+        //going to (0,0,0) would be a disaster waiting to happen as the origin is presumably on the ground
+        if (cmd.content.location.lat == 0 && cmd.content.location.lng == 0 && cmd.content.location.alt == 0) {
+            const Vector3f& curr_pos = inertial_nav.get_position();
+            wp_start(curr_pos);
+        } else {
+            wp_start(Vector3f(cmd.content.location.lat, cmd.content.location.lng, cmd.content.location.alt));
+        }
     } else {
         Location_Class target_loc(cmd.content.location);
         const Location_Class &current_loc = copter.current_loc;
