@@ -901,7 +901,12 @@ MAV_MISSION_RESULT AP_Mission::mavlink_int_to_mission_cmd(const mavlink_mission_
 #if APM_BUILD_TYPE(APM_BUILD_ArduCopter)
         case MAV_FRAME_LOCAL_NED:
             if (local_frame_supported) {
+                cmd.content.location.alt = -cmd.content.location.alt;
+                //mavlink spec MISSION_ITEM_INT states local: position in meters * 1e4"
+                cmd.content.location.lat = packet.x * 0.01f; //convert to cm
+                cmd.content.location.lng = packet.y * 0.01f;
                 cmd.content.location.flags.local_frame = 1;
+                cmd.content.location.flags.origin_alt = 1;
             } else {
                 return MAV_MISSION_UNSUPPORTED_FRAME;
             }
@@ -1027,10 +1032,15 @@ bool AP_Mission::mission_cmd_to_mavlink(const AP_Mission::Mission_Command& cmd, 
         break;
 
     default:
-        // all other commands use x and y as lat/lon. We need to
-        // multiply by 1e-7 to convert to int32_t
-        packet.x = mav_cmd.x * 1.0e-7f;
-        packet.y = mav_cmd.y * 1.0e-7f;
+        if (packet.frame == MAV_FRAME_LOCAL_NED) {
+            packet.x = mav_cmd.x * 0.0001f;
+            packet.y = mav_cmd.y * 0.0001f;
+        } else {
+            // all other commands use x and y as lat/lon. We need to
+            // multiply by 1e-7 to convert to int32_t
+            packet.x = mav_cmd.x * 1.0e-7f;
+            packet.y = mav_cmd.y * 1.0e-7f;
+        }
         break;
     }
     
@@ -1346,14 +1356,23 @@ bool AP_Mission::mission_cmd_to_mavlink_int(const AP_Mission::Mission_Command& c
 
     // copy location from mavlink to command
     if (copy_location) {
-        packet.x = cmd.content.location.lat;
-        packet.y = cmd.content.location.lng;
+        if (cmd.content.location.flags.local_frame) {
+            //position in meters * 1e4
+            packet.x = cmd.content.location.lat * 100;
+            packet.y = cmd.content.location.lng * 100;
+        } else {
+            packet.x = cmd.content.location.lat;
+            packet.y = cmd.content.location.lng;
+        }
     }
     if (copy_location || copy_alt) {
-        packet.z = cmd.content.location.alt / 100.0f;   // cmd alt in cm to m
-        if (cmd.content.location.flags.relative_alt) {
+        packet.z = cmd.content.location.alt * 0.01f;   // cmd alt in cm to m
+        if (cmd.content.location.flags.local_frame) {
+            packet.z = -cmd.content.location.alt * 0.01f;
+            packet.frame = MAV_FRAME_LOCAL_NED;
+        } else if (cmd.content.location.flags.relative_alt) {
             packet.frame = MAV_FRAME_GLOBAL_RELATIVE_ALT;
-        }else{
+        } else{
             packet.frame = MAV_FRAME_GLOBAL;
         }
 #if AP_TERRAIN_AVAILABLE
