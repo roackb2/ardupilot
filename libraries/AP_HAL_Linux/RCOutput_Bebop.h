@@ -55,7 +55,7 @@ public:
 
 class RCOutput_Bebop : public AP_HAL::RCOutput {
 public:
-    RCOutput_Bebop(AP_HAL::OwnPtr<AP_HAL::I2CDevice> dev);
+    RCOutput_Bebop();
 
     static RCOutput_Bebop *from(AP_HAL::RCOutput *rcout) {
         return static_cast<RCOutput_Bebop*>(rcout);
@@ -73,37 +73,15 @@ public:
     void     read(uint16_t* period_us, uint8_t len) override;
     void     set_esc_scaling(uint16_t min_pwm, uint16_t max_pwm) override;
     int      read_obs_data(BebopBLDC_ObsData &data);
-    void     play_note(uint8_t pwm, uint16_t period_us, uint16_t duration_ms);
-
 private:
-    AP_HAL::OwnPtr<AP_HAL::I2CDevice> _dev;
-    uint16_t _request_period_us[BEBOP_BLDC_MOTORS_NUM];
-    uint16_t _period_us[BEBOP_BLDC_MOTORS_NUM];
-    uint16_t _rpm[BEBOP_BLDC_MOTORS_NUM];
+    uint16_t _period_us_to_rpm(uint16_t period_us);
+
+    int actuators_fd;
     uint16_t _frequency;
     uint16_t _min_pwm;
     uint16_t _max_pwm;
-    uint8_t _n_motors=4;
-    uint8_t  _state;
-    bool     _corking = false;
-    uint16_t _max_rpm;
-
-    uint8_t _checksum(uint8_t *data, unsigned int len);
-    void _start_prop();
-    void _toggle_gpio(uint8_t mask);
-    void _set_ref_speed(uint16_t rpm[BEBOP_BLDC_MOTORS_NUM]);
-    bool _get_info(struct bldc_info *info);
-    void _stop_prop();
-    void _clear_error();
-    void _play_sound(uint8_t sound);
-    uint16_t _period_us_to_rpm(uint16_t period_us);
-
-    /* thread related members */
-    pthread_t _thread;
-    pthread_mutex_t _mutex;
-    pthread_cond_t _cond;
-    void _run_rcout();
-    static void *_control_thread(void *arg);
+    uint16_t _period_us[4];
+    bool _cork;
 };
 
 }

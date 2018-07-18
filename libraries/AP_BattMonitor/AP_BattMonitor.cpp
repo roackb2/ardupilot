@@ -89,8 +89,8 @@ AP_BattMonitor::init()
                 break;
             case AP_BattMonitor_Params::BattMonitor_TYPE_BEBOP:
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP || CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_DISCO
-                drivers[instance] = new AP_BattMonitor_Bebop(*this, state[instance], _params[instance]);
-                _num_instances++;
+                //drivers[instance] = new AP_BattMonitor_Bebop(*this, state[instance], _params[instance]);
+                //_num_instances++;
 #endif
                 break;
             case AP_BattMonitor_Params::BattMonitor_TYPE_UAVCAN_BatteryInfo:
