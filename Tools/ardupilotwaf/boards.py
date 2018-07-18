@@ -436,7 +436,7 @@ class linux(Board):
     def configure_env(self, cfg, env):
         super(linux, self).configure_env(cfg, env)
 
-        cfg.find_toolchain_program('pkg-config', var='PKGCONFIG')
+        #cfg.find_toolchain_program('pkg-config', var='PKGCONFIG')
 
         env.DEFINES.update(
             CONFIG_HAL_BOARD = 'HAL_BOARD_LINUX',
@@ -579,7 +579,7 @@ class pxf(linux):
         )
 
 class bebop(linux):
-    toolchain = 'arm-linux-gnueabihf'
+    toolchain = 'arm-none-linux-gnueabi'
 
     def configure_env(self, cfg, env):
         super(bebop, self).configure_env(cfg, env)

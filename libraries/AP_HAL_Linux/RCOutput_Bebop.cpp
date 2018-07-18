@@ -503,7 +503,8 @@ void RCOutput_Bebop::_run_rcout()
     bebop_bldc_channels[3] = bebop_bldc_right_back;
 #endif
     
-    hw_version = Util::from(hal.util)->get_hw_arm32();
+    //hw_version = Util::from(hal.util)->get_hw_arm32();
+    hw_version = UTIL_HARDWARE_BEBOP;
     if (hw_version == UTIL_HARDWARE_BEBOP) {
         _max_rpm = BEBOP_BLDC_MAX_RPM_1;
     } else if (hw_version == UTIL_HARDWARE_BEBOP2) {

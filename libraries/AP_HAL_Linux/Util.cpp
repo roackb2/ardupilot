@@ -175,7 +175,7 @@ int Util::read_file(const char *path, const char *fmt, ...)
 const char *Linux::Util::_hw_names[UTIL_NUM_HARDWARES] = {
     [UTIL_HARDWARE_RPI1]   = "BCM2708",
     [UTIL_HARDWARE_RPI2]   = "BCM2709",
-    [UTIL_HARDWARE_BEBOP]  = "Mykonos3 board",
+    [UTIL_HARDWARE_BEBOP]  = "Delos3 board",
     [UTIL_HARDWARE_BEBOP2] = "Milos board",
     [UTIL_HARDWARE_DISCO]  = "Evinrude board",
 };
@@ -183,6 +183,7 @@ const char *Linux::Util::_hw_names[UTIL_NUM_HARDWARES] = {
 #define MAX_SIZE_LINE 50
 int Util::get_hw_arm32()
 {
+    return 2;
     char buffer[MAX_SIZE_LINE] = { 0 };
     FILE *f = fopen("/proc/cpuinfo", "r");
     if (f == nullptr) {

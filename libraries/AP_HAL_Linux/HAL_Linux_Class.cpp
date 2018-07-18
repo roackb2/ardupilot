@@ -205,7 +205,8 @@ static Empty::RCOutput rcoutDriver;
 static Scheduler schedulerInstance;
 
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP
-static OpticalFlow_Onboard opticalFlow;
+//static OpticalFlow_Onboard opticalFlow;
+static Empty::OpticalFlow opticalFlow;
 #else
 static Empty::OpticalFlow opticalFlow;
 #endif
