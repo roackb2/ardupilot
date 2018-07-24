@@ -62,11 +62,11 @@ static Util utilInstance;
 
 // 5 serial ports on Linux
 static UARTDriver uartADriver(true);
-static UARTDriver uartCDriver(false);
-static UARTDriver uartDDriver(false);
-static UARTDriver uartEDriver(false);
-static UARTDriver uartFDriver(false);
-static UARTDriver uartGDriver(false);
+//static UARTDriver uartCDriver(false);
+//static UARTDriver uartDDriver(false);
+//static UARTDriver uartEDriver(false);
+//static UARTDriver uartFDriver(false);
+//static UARTDriver uartGDriver(false);
 
 static I2CDeviceManager i2c_mgr_instance;
 static SPIDeviceManager spi_mgr_instance;
@@ -76,7 +76,7 @@ static SPIDeviceManager spi_mgr_instance;
     CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BH
 static SPIUARTDriver uartBDriver;
 #else
-static UARTDriver uartBDriver(false);
+//static UARTDriver uartBDriver(false);
 #endif
 
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_NAVIO || \
@@ -123,7 +123,8 @@ static GPIO_Sysfs gpioDriver;
 #elif CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP || \
       CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_DISCO || \
       CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_AERO
-static GPIO_Sysfs gpioDriver;
+//static GPIO_Sysfs gpioDriver;
+static Empty::GPIO gpioDriver;
 #else
 static Empty::GPIO gpioDriver;
 #endif
@@ -213,13 +214,13 @@ static Empty::OpticalFlow opticalFlow;
 
 HAL_Linux::HAL_Linux() :
     AP_HAL::HAL(
-        &uartADriver,
-        &uartBDriver,
+        &uartADriver,0,0,0,0,0,0,
+/*        &uartBDriver,
         &uartCDriver,
         &uartDDriver,
         &uartEDriver,
         &uartFDriver,
-        &uartGDriver,
+        &uartGDriver,*/
         &i2c_mgr_instance,
         &spi_mgr_instance,
         &analogIn,
@@ -297,7 +298,7 @@ void HAL_Linux::run(int argc, char* const argv[], Callbacks* callbacks) const
         case 'A':
             uartADriver.set_device_path(gopt.optarg);
             break;
-        case 'B':
+/*        case 'B':
             uartBDriver.set_device_path(gopt.optarg);
             break;
         case 'C':
@@ -314,7 +315,7 @@ void HAL_Linux::run(int argc, char* const argv[], Callbacks* callbacks) const
             break;
         case 'G':
             uartGDriver.set_device_path(gopt.optarg);
-            break;
+            break;*/
         case 'l':
             utilInstance.set_custom_log_directory(gopt.optarg);
             break;
@@ -345,9 +346,9 @@ void HAL_Linux::run(int argc, char* const argv[], Callbacks* callbacks) const
     rcout->init();
     rcin->init();
     uartA->begin(115200);
-    uartE->begin(115200);
-    uartF->begin(115200);
-    uartG->begin(115200);
+    //uartE->begin(115200);
+    //uartF->begin(115200);
+    //uartG->begin(115200);
     analogin->init();
     utilInstance.init(argc+gopt.optind-1, &argv[gopt.optind-1]);
 

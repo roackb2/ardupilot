@@ -74,7 +74,7 @@ void Scheduler::init()
         SCHED_THREAD(timer, TIMER),
         SCHED_THREAD(uart, UART),
         SCHED_THREAD(rcin, RCIN),
-        SCHED_THREAD(tonealarm, TONEALARM),
+        //SCHED_THREAD(tonealarm, TONEALARM),
         SCHED_THREAD(io, IO),
     };
 
@@ -121,13 +121,13 @@ void Scheduler::_debug_stack()
                 "\ttimer = %zu\n"
                 "\tio    = %zu\n"
                 "\trcin  = %zu\n"
-                "\tuart  = %zu\n"
-                "\ttone  = %zu\n",
+                "\tuart  = %zu\n",
+                //"\ttone  = %zu\n",
                 _timer_thread.get_stack_usage(),
                 _io_thread.get_stack_usage(),
                 _rcin_thread.get_stack_usage(),
-                _uart_thread.get_stack_usage(),
-                _tonealarm_thread.get_stack_usage());
+                _uart_thread.get_stack_usage());
+                //_tonealarm_thread.get_stack_usage());
         _last_stack_debug_msec = now;
     }
 }
@@ -265,12 +265,12 @@ void Scheduler::_run_uarts()
 {
     // process any pending serial bytes
     hal.uartA->_timer_tick();
-    hal.uartB->_timer_tick();
-    hal.uartC->_timer_tick();
-    hal.uartD->_timer_tick();
-    hal.uartE->_timer_tick();
-    hal.uartF->_timer_tick();
-    hal.uartG->_timer_tick();
+//    hal.uartB->_timer_tick();
+//    hal.uartC->_timer_tick();
+//    hal.uartD->_timer_tick();
+//    hal.uartE->_timer_tick();
+//    hal.uartF->_timer_tick();
+//    hal.uartG->_timer_tick();
 }
 
 void Scheduler::_rcin_task()
@@ -286,7 +286,7 @@ void Scheduler::_uart_task()
 void Scheduler::_tonealarm_task()
 {
     // process tone command
-    Util::from(hal.util)->_toneAlarm_timer_tick();
+    //Util::from(hal.util)->_toneAlarm_timer_tick();
 }
 
 void Scheduler::_io_task()
@@ -348,11 +348,11 @@ void Scheduler::teardown()
     _io_thread.stop();
     _rcin_thread.stop();
     _uart_thread.stop();
-    _tonealarm_thread.stop();
+    //_tonealarm_thread.stop();
 
     _timer_thread.join();
     _io_thread.join();
     _rcin_thread.join();
     _uart_thread.join();
-    _tonealarm_thread.join();
+    //_tonealarm_thread.join();
 }

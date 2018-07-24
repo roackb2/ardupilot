@@ -32,7 +32,6 @@ typedef struct { unsigned int val[4]; } __attribute__ ((packed)) pwm_delos_quadr
 using namespace Linux;
 
 static const AP_HAL::HAL& hal = AP_HAL::get_HAL();
-static uint32_t last = 0;
 
 enum {
   SiP6_PWM0_START = (1<<0),
@@ -101,6 +100,9 @@ void RCOutput_Bebop::push()
     uint16_t rpm_ref[4];
     pwm_delos_quadruplet m;
 
+    if (!_cork) {
+        return;
+    }
     _cork = false;
 
     for (int i=0;i<4;i++) rpm_ref[i] = _period_us_to_rpm(_period_us[i]);
@@ -116,10 +118,10 @@ void RCOutput_Bebop::push()
   if( rpm_ref[2] > (PWM_TOTAL_RANGE) ) { m.val[2] = PWM_REG_SATURATION; }
   if( rpm_ref[3] > (PWM_TOTAL_RANGE) ) { m.val[3] = PWM_REG_SATURATION; }
 
-  if( rpm_ref[0] < 0 ) { m.val[0] = 0; }
+  /*if( rpm_ref[0] < 0 ) { m.val[0] = 0; }
   if( rpm_ref[1] < 0 ) { m.val[1] = 0; }
   if( rpm_ref[2] < 0 ) { m.val[2] = 0; }
-  if( rpm_ref[3] < 0 ) { m.val[3] = 0; }
+  if( rpm_ref[3] < 0 ) { m.val[3] = 0; }*/
 
   /* The upper 16-bit word of the ratio register contains the number
    * of bits used to code the ratio command  */

@@ -33,20 +33,20 @@
 #define HAL_GPIO_LED_ON           LOW
 #define HAL_GPIO_LED_OFF          HIGH
 #elif CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP
-#define HAL_BOARD_LOG_DIRECTORY "/data/ftp/internal_000/ardupilot/logs"
-#define HAL_BOARD_TERRAIN_DIRECTORY "/data/ftp/internal_000/ardupilot/terrain"
-#define HAL_BOARD_STORAGE_DIRECTORY "/data/ftp/internal_000/ardupilot"
+#define HAL_BOARD_LOG_DIRECTORY "/data/edu/ardupilot/logs"
+#define HAL_BOARD_TERRAIN_DIRECTORY "/data/edu/ardupilot/terrain"
+#define HAL_BOARD_STORAGE_DIRECTORY "/data/edu/ardupilot"
 #define HAL_INS_DEFAULT HAL_INS_MPU60XX_I2C
 #define HAL_INS_DEFAULT_ROTATION ROTATION_YAW_270
 #define HAL_INS_MPU60x0_I2C_BUS 0
 #define HAL_INS_MPU60x0_I2C_ADDR 0x68
-#define HAL_COMPASS_DEFAULT HAL_COMPASS_AK8963_I2C
+#define HAL_COMPASS_DEFAULT HAL_COMPASS_NONE
 #define HAL_COMPASS_AK8963_I2C_BUS 0
 #define HAL_COMPASS_AK8963_I2C_ADDR 0x0d
 #define HAL_BARO_DEFAULT HAL_BARO_INPUTEVENT
 //#define HAL_BARO_MS5607_I2C_BUS 0
 //#define HAL_BARO_MS5607_I2C_ADDR 0x77
-#define HAL_HAVE_IMU_HEATER 1
+#define HAL_HAVE_IMU_HEATER 0
 #define HAL_IMU_TEMP_DEFAULT 55
 //#define HAL_UTILS_HEAT HAL_LINUX_HEAT_PWM
 #define HAL_LINUX_HEAT_PWM_NUM  6
@@ -68,7 +68,7 @@
 #define HAL_FLOW_PX4_MAX_FLOW_PIXEL 4
 #define HAL_FLOW_PX4_BOTTOM_FLOW_FEATURE_THRESHOLD 30
 #define HAL_FLOW_PX4_BOTTOM_FLOW_VALUE_THRESHOLD 5000
-#define HAL_PARAM_DEFAULTS_PATH "/data/ftp/internal_000/ardupilot/bebop.parm"
+#define HAL_PARAM_DEFAULTS_PATH "/data/edu/ardupilot/bebop.parm"
 #define HAL_RCOUT_BEBOP_BLDC_I2C_BUS 0
 #define HAL_RCOUT_BEBOP_BLDC_I2C_ADDR 0x08
 /* focal length 2.21mm pixel size 3.6 um, 2x binning in each direction
