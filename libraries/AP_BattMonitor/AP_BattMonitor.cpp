@@ -61,7 +61,7 @@ AP_BattMonitor::init()
 
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP || CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_DISCO
     // force monitor for bebop
-    _params[0]._type.set(AP_BattMonitor_Params::BattMonitor_TYPE_BEBOP);
+    //_params[0]._type.set(AP_BattMonitor_Params::BattMonitor_TYPE_BEBOP);
 #endif
 
     // create each instance

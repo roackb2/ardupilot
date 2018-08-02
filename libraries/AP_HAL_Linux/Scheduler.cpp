@@ -71,9 +71,9 @@ void Scheduler::init()
         int prio;
         uint32_t rate;
     } sched_table[] = {
-        SCHED_THREAD(timer, TIMER),
+        //SCHED_THREAD(timer, TIMER),
         SCHED_THREAD(uart, UART),
-        SCHED_THREAD(rcin, RCIN),
+        //SCHED_THREAD(rcin, RCIN),
         //SCHED_THREAD(tonealarm, TONEALARM),
         SCHED_THREAD(io, IO),
     };
@@ -114,7 +114,7 @@ void Scheduler::init()
 
 void Scheduler::_debug_stack()
 {
-    uint64_t now = AP_HAL::millis64();
+/*    uint64_t now = AP_HAL::millis64();
 
     if (now - _last_stack_debug_msec > 5000) {
         fprintf(stderr, "Stack Usage:\n"
@@ -129,7 +129,7 @@ void Scheduler::_debug_stack()
                 _uart_thread.get_stack_usage());
                 //_tonealarm_thread.get_stack_usage());
         _last_stack_debug_msec = now;
-    }
+    }*/
 }
 
 void Scheduler::microsleep(uint32_t usec)
@@ -344,15 +344,15 @@ bool Scheduler::SchedulerThread::_run()
 
 void Scheduler::teardown()
 {
-    _timer_thread.stop();
+    //_timer_thread.stop();
     _io_thread.stop();
-    _rcin_thread.stop();
+    //_rcin_thread.stop();
     _uart_thread.stop();
     //_tonealarm_thread.stop();
 
-    _timer_thread.join();
+    //_timer_thread.join();
     _io_thread.join();
-    _rcin_thread.join();
+    //_rcin_thread.join();
     _uart_thread.join();
     //_tonealarm_thread.join();
 }

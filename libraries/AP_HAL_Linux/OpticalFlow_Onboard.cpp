@@ -14,6 +14,7 @@
  */
 
 #include <AP_HAL/AP_HAL.h>
+#if 0
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP
 #include "OpticalFlow_Onboard.h"
 
@@ -419,4 +420,5 @@ void OpticalFlow_Onboard::_run_optflow()
         free(output_buffer);
     }
 }
+#endif
 #endif

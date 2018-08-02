@@ -182,6 +182,7 @@ void AP_Baro::calibrate(bool save)
     for (uint8_t i = 0; i < 10; i++) {
         uint32_t tstart = AP_HAL::millis();
         do {
+            accumulate();
             update();
             if (AP_HAL::millis() - tstart > 500) {
                 AP_HAL::panic("PANIC: AP_Baro::read unsuccessful "

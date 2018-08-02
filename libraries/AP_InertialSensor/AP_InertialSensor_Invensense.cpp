@@ -43,6 +43,7 @@ extern const AP_HAL::HAL& hal;
 #define debug(fmt, args ...)  do {printf("MPU: " fmt "\n", ## args); } while(0)
 #endif
 
+#define INVENSENSE_EXT_SYNC_ENABLE 0
 /*
   EXT_SYNC allows for frame synchronisation with an external device
   such as a camera. When enabled the LSB of AccelZ holds the FSYNC bit
@@ -266,7 +267,7 @@ void AP_InertialSensor_Invensense::start()
     _set_raw_sample_accel_multiplier(_accel_instance, multiplier_accel);
 
     if (_fast_sampling) {
-        hal.console->printf("MPU[%u]: enabled fast sampling rate %uHz/%uHz\n",
+        printf("MPU[%u]: enabled fast sampling rate %uHz/%uHz\n",
                             _accel_instance, _backend_rate_hz*_fifo_downsample_rate, _backend_rate_hz);
     }
     

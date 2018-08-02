@@ -1,6 +1,7 @@
 #include <AP_gbenchmark.h>
 #include <AP_HAL/AP_HAL.h>
 
+#if 0
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP
 
 #include <AP_HAL_Linux/VideoIn.h>
@@ -63,6 +64,7 @@ static void BM_YuyvToGrey(benchmark::State& state)
 }
 
 BENCHMARK(BM_YuyvToGrey)->Arg(64 * 64)->Arg(320 * 240)->Arg(640 * 480);
+#endif
 #endif
 
 BENCHMARK_MAIN()

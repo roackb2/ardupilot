@@ -18,6 +18,7 @@
  */
 
 #include <AP_HAL/AP_HAL.h>
+#if 0
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP
 #include "VideoIn.h"
 
@@ -389,4 +390,5 @@ bool VideoIn::_dequeue_frame(Frame &frame)
     return true;
 }
 
+#endif
 #endif

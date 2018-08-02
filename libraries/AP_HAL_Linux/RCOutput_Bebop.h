@@ -82,6 +82,7 @@ private:
     uint16_t _max_pwm;
     uint16_t _period_us[4];
     bool _cork;
+    bool _changed;
 };
 
 }

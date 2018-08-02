@@ -50,6 +50,7 @@ void RCOutput_Bebop::init()
     _max_pwm = 1900;
     _frequency = 50;
     _cork = false;
+    _changed = false;
 
     actuators_fd = open("/dev/pwm", O_RDWR);
     pwm_delos_quadruplet m = {{ 1, 1, 1, 1 }};
@@ -86,7 +87,10 @@ void RCOutput_Bebop::write(uint8_t ch, uint16_t period_us)
         printf("write rc ch %d %d\n", ch, period_us);
         last = now;
     }*/
-    if (ch < 4) _period_us[ch] = period_us;
+    if (ch < 4) {
+        if (period_us != _period_us[ch]) _changed = true;
+        _period_us[ch] = period_us;
+    }
     if (!_cork) push();
 }
 
@@ -104,6 +108,9 @@ void RCOutput_Bebop::push()
         return;
     }
     _cork = false;
+
+    if (!_changed) return;
+    _changed = false;
 
     for (int i=0;i<4;i++) rpm_ref[i] = _period_us_to_rpm(_period_us[i]);
   

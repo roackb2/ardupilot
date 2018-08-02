@@ -23,6 +23,7 @@
 
 #include <AP_HAL/AP_HAL.h>
 
+#if 0
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP
 
 using namespace Linux;
@@ -144,4 +145,5 @@ const struct mt9v117_patch CameraSensor_Mt9v117::_patch_lines[MT9V117_PATCH_LINE
     {patch_line13, sizeof(patch_line13)}
 };
 
+#endif
 #endif

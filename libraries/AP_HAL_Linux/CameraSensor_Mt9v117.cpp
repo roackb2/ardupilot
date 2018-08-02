@@ -14,6 +14,7 @@
  */
 #include <AP_HAL/AP_HAL.h>
 
+#if 0
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP
 #include "CameraSensor_Mt9v117.h"
 
@@ -416,4 +417,5 @@ void CameraSensor_Mt9v117::_init_sensor()
     _set_basic_settings();
 }
 
+#endif
 #endif

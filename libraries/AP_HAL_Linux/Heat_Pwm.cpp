@@ -14,7 +14,7 @@
  */
 
 #include <AP_HAL/AP_HAL.h>
-
+#if 0
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP || \
     CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_DISCO || \
     CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_EDGE
@@ -94,4 +94,5 @@ void HeatPwm::set_imu_target_temp(int8_t *target)
     _target = target;
 }
 
+#endif
 #endif

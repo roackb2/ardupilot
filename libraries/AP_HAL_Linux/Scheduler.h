@@ -77,11 +77,11 @@ private:
     AP_HAL::MemberProc _io_proc[LINUX_SCHEDULER_MAX_IO_PROCS];
     uint8_t _num_io_procs;
 
-    SchedulerThread _timer_thread{FUNCTOR_BIND_MEMBER(&Scheduler::_timer_task, void), *this};
+    //SchedulerThread _timer_thread{FUNCTOR_BIND_MEMBER(&Scheduler::_timer_task, void), *this};
     SchedulerThread _io_thread{FUNCTOR_BIND_MEMBER(&Scheduler::_io_task, void), *this};
-    SchedulerThread _rcin_thread{FUNCTOR_BIND_MEMBER(&Scheduler::_rcin_task, void), *this};
+    //SchedulerThread _rcin_thread{FUNCTOR_BIND_MEMBER(&Scheduler::_rcin_task, void), *this};
     SchedulerThread _uart_thread{FUNCTOR_BIND_MEMBER(&Scheduler::_uart_task, void), *this};
-    SchedulerThread _tonealarm_thread{FUNCTOR_BIND_MEMBER(&Scheduler::_tonealarm_task, void), *this};
+    //SchedulerThread _tonealarm_thread{FUNCTOR_BIND_MEMBER(&Scheduler::_tonealarm_task, void), *this};
 
     void _timer_task();
     void _io_task();
