@@ -81,6 +81,7 @@ private:
     uint16_t _min_pwm;
     uint16_t _max_pwm;
     uint16_t _period_us[4];
+    uint16_t _rpm_ref[4];
     bool _cork;
     bool _changed;
 };

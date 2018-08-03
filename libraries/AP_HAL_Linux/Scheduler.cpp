@@ -46,7 +46,7 @@ extern const AP_HAL::HAL& hal;
 #else
 #define APM_LINUX_RCIN_RATE             100
 #define APM_LINUX_TONEALARM_RATE        100
-#define APM_LINUX_IO_RATE               50
+#define APM_LINUX_IO_RATE               20
 #endif
 
 #define SCHED_THREAD(name_, UPPER_NAME_)                        \

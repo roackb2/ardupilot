@@ -9,6 +9,8 @@
 #include <sys/mman.h>
 #include <linux/input.h>
 
+//some code copied from paparazzi
+
 extern const AP_HAL::HAL& hal;
 
 AP_Baro_InputEvent::AP_Baro_InputEvent(AP_Baro &baro) :
@@ -60,15 +62,15 @@ void AP_Baro_InputEvent::tick()
 {
     struct input_event ev;
     ssize_t n;
-    uint32_t now = AP_HAL::millis();
-    if (now - _last_time > 50) {
-        _last_time = now;
+//    uint32_t now = AP_HAL::millis();
+//    if (now - _last_time > 50) {
+//        _last_time = now;
        n = read(_fd, &ev, sizeof(ev));
         if (n == sizeof(ev) && ev.type == EV_ABS && ev.code == ABS_PRESSURE) {
             _pressure = 100.f * ((float)ev.value) / 4096.f;
             _data_avail = true;
         }
-    }
+//    }
 }
 
 /*void* AP_Baro_InputEvent::_timer(void* arg)

@@ -1,6 +1,8 @@
 #include <AP_HAL/AP_HAL.h>
 #include <AP_Math/AP_Math.h>
 
+//some code are copied from paparazziuav
+
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP || CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_DISCO
 #include "RCOutput_Bebop.h"
 #include "Util.h"
@@ -88,8 +90,11 @@ void RCOutput_Bebop::write(uint8_t ch, uint16_t period_us)
         last = now;
     }*/
     if (ch < 4) {
-        if (period_us != _period_us[ch]) _changed = true;
-        _period_us[ch] = period_us;
+        if (period_us != _period_us[ch]) {
+            _changed = true;
+            _period_us[ch] = period_us;
+            _rpm_ref[ch] = _period_us_to_rpm(period_us);
+        }
     }
     if (!_cork) push();
 }
@@ -101,7 +106,7 @@ void RCOutput_Bebop::cork()
 
 void RCOutput_Bebop::push()
 {
-    uint16_t rpm_ref[4];
+    //uint16_t rpm_ref[4];
     pwm_delos_quadruplet m;
 
     if (!_cork) {
@@ -112,18 +117,18 @@ void RCOutput_Bebop::push()
     if (!_changed) return;
     _changed = false;
 
-    for (int i=0;i<4;i++) rpm_ref[i] = _period_us_to_rpm(_period_us[i]);
+    //for (int i=0;i<4;i++) rpm_ref[i] = _period_us_to_rpm(_period_us[i]);
   
-  m.val[0] = rpm_ref[0] & 0xffff;
-  m.val[1] = rpm_ref[1] & 0xffff;
-  m.val[2] = rpm_ref[2] & 0xffff;
-  m.val[3] = rpm_ref[3] & 0xffff;
+  m.val[0] = _rpm_ref[0] & 0xffff;
+  m.val[1] = _rpm_ref[1] & 0xffff;
+  m.val[2] = _rpm_ref[2] & 0xffff;
+  m.val[3] = _rpm_ref[3] & 0xffff;
 
 
-  if( rpm_ref[0] > (PWM_TOTAL_RANGE) ) { m.val[0] = PWM_REG_SATURATION; }
-  if( rpm_ref[1] > (PWM_TOTAL_RANGE) ) { m.val[1] = PWM_REG_SATURATION; }
-  if( rpm_ref[2] > (PWM_TOTAL_RANGE) ) { m.val[2] = PWM_REG_SATURATION; }
-  if( rpm_ref[3] > (PWM_TOTAL_RANGE) ) { m.val[3] = PWM_REG_SATURATION; }
+  if( _rpm_ref[0] > (PWM_TOTAL_RANGE) ) { m.val[0] = PWM_REG_SATURATION; }
+  if( _rpm_ref[1] > (PWM_TOTAL_RANGE) ) { m.val[1] = PWM_REG_SATURATION; }
+  if( _rpm_ref[2] > (PWM_TOTAL_RANGE) ) { m.val[2] = PWM_REG_SATURATION; }
+  if( _rpm_ref[3] > (PWM_TOTAL_RANGE) ) { m.val[3] = PWM_REG_SATURATION; }
 
   /*if( rpm_ref[0] < 0 ) { m.val[0] = 0; }
   if( rpm_ref[1] < 0 ) { m.val[1] = 0; }
