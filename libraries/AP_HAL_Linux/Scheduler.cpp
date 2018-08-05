@@ -45,7 +45,11 @@ extern const AP_HAL::HAL& hal;
 #define APM_LINUX_IO_RATE               50
 #else
 #define APM_LINUX_RCIN_RATE             100
+#if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_MAMBO
+#define APM_LINUX_IO_RATE               10
+#else
 #define APM_LINUX_IO_RATE               50
+#endif
 #endif
 
 #define SCHED_THREAD(name_, UPPER_NAME_)                        \
@@ -70,10 +74,15 @@ void Scheduler::init()
         int prio;
         uint32_t rate;
     } sched_table[] = {
+#if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_MAMBO
+        SCHED_THREAD(uart, UART),
+        SCHED_THREAD(io, IO),
+#else
         SCHED_THREAD(timer, TIMER),
         SCHED_THREAD(uart, UART),
         SCHED_THREAD(rcin, RCIN),
         SCHED_THREAD(io, IO),
+#endif
     };
 
     _main_ctx = pthread_self();
@@ -330,6 +339,13 @@ bool Scheduler::SchedulerThread::_run()
 
 void Scheduler::teardown()
 {
+#if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_MAMBO
+    _io_thread.stop();
+    _uart_thread.stop();
+
+    _io_thread.join();
+    _uart_thread.join();
+#else
     _timer_thread.stop();
     _io_thread.stop();
     _rcin_thread.stop();
@@ -339,6 +355,7 @@ void Scheduler::teardown()
     _io_thread.join();
     _rcin_thread.join();
     _uart_thread.join();
+#endif
 }
 
 /*
