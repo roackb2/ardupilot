@@ -106,6 +106,7 @@
 	#define MODE_DRIFT_ENABLED    DISABLED            // disable drift mode support
 	#define MODE_FOLLOW_ENABLED   DISABLED            // disable follow mode support
 	#define MODE_GUIDED_NOGPS_ENABLED   DISABLED      // disable guided/nogps mode support
+    #define MODE_LOITER_ENABLED   DISABLED
 	#define MODE_POSHOLD_ENABLED  DISABLED            // disable poshold mode support
 	#define MODE_RTL_ENABLED DISABLED                 // disable rtl mode support
 	#define MODE_SMARTRTL_ENABLED DISABLED            // disable smartrtl mode support

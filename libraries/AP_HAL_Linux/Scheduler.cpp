@@ -46,7 +46,7 @@ extern const AP_HAL::HAL& hal;
 #else
 #define APM_LINUX_RCIN_RATE             100
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_MAMBO
-#define APM_LINUX_IO_RATE               10
+#define APM_LINUX_IO_RATE               20
 #else
 #define APM_LINUX_IO_RATE               50
 #endif
