@@ -34,10 +34,6 @@
 #define SCHEDULER_DEFAULT_LOOP_RATE  50
 #endif
 
-#if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_MAMBO
-#define SCHEDULER_DEFAULT_LOOP_RATE 200
-#endif
-
 #define debug(level, fmt, args...)   do { if ((level) <= _debug.get()) { hal.console->printf(fmt, ##args); }} while (0)
 
 extern const AP_HAL::HAL& hal;
