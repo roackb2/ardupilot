@@ -2222,9 +2222,9 @@ void GCS_MAVLINK::log_vision_position_estimate_data(const uint64_t usec,
                                            (double)x,
                                            (double)y,
                                            (double)z,
-                                           (double)roll,
-                                           (double)pitch,
-                                           (double)yaw);
+                                           (double)roll * (180 / M_PI),
+                                           (double)pitch * (180 / M_PI),
+                                           (double)yaw * (180 / M_PI));
 }
 
 void GCS_MAVLINK::handle_att_pos_mocap(mavlink_message_t *msg)
@@ -3200,6 +3200,16 @@ uint32_t GCS_MAVLINK::correct_offboard_timestamp_usec_to_ms(uint64_t offboard_us
 {
     const uint32_t max_lag_us = 500*1000UL;
     uint64_t local_us;
+    int64_t diff_us;
+
+    if (offboard_usec > (24*60*60*1000000UL)) {
+        if (AP::rtc().rtc_shift > 0) {
+            return (offboard_usec - AP::rtc().rtc_shift)*0.001;
+        } else {
+            return AP_HAL::millis();
+        }
+    }
+
     // if the HAL supports it then constrain the latest possible time
     // the packet could have been sent by the uart receive time and
     // the baudrate and packet size.
@@ -3209,7 +3219,7 @@ uint32_t GCS_MAVLINK::correct_offboard_timestamp_usec_to_ms(uint64_t offboard_us
     } else {
         local_us = AP_HAL::micros64();
     }
-    int64_t diff_us = int64_t(local_us) - int64_t(offboard_usec);
+    diff_us = int64_t(local_us) - int64_t(offboard_usec);
 
     if (!lag_correction.initialised ||
         diff_us < lag_correction.link_offset_usec) {

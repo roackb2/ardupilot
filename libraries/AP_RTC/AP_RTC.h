@@ -48,12 +48,12 @@ public:
 
     static const char *_clock_source_types[];
 
+    int64_t rtc_shift = 0;
 private:
 
     static AP_RTC *_singleton;
 
     source_type rtc_source_type = SOURCE_NONE;
-    int64_t rtc_shift;
 
 };
 
