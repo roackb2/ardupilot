@@ -9,6 +9,8 @@
 
 #include <stdio.h>
 
+//#define MY_TEST_NOEKF
+
 extern const AP_HAL::HAL& hal;
 
 
@@ -119,8 +121,12 @@ bool NavEKF2_core::getHeightControlLimit(float &height) const
 // return the Euler roll, pitch and yaw angle in radians
 void NavEKF2_core::getEulerAngles(Vector3f &euler) const
 {
+#ifdef MY_TEST_NOEKF
+    _mocap_quat.to_euler(euler.x, euler.y, euler.z);
+#else
     outputDataNew.quat.to_euler(euler.x, euler.y, euler.z);
     euler = euler - _ahrs->get_trim();
+#endif
 }
 
 // return body axis gyro bias estimates in rad/sec
@@ -154,14 +160,22 @@ void NavEKF2_core::getTiltError(float &ang) const
 // return the transformation matrix from XYZ (body) to NED axes
 void NavEKF2_core::getRotationBodyToNED(Matrix3f &mat) const
 {
+#ifdef MY_TEST_NOEKF
+    _mocap_quat.rotation_matrix(mat);
+#else
     outputDataNew.quat.rotation_matrix(mat);
+#endif
     mat = mat * _ahrs->get_rotation_vehicle_body_to_autopilot_body();
 }
 
 // return the quaternions defining the rotation from NED to XYZ (body) axes
 void NavEKF2_core::getQuaternion(Quaternion& ret) const
 {
+#ifdef MY_TEST_NOEKF
+    ret = _mocap_quat;
+#else
     ret = outputDataNew.quat;
+#endif
 }
 
 // return the amount of yaw angle change due to the last yaw angle reset in radians
@@ -244,8 +258,13 @@ bool NavEKF2_core::getPosNE(Vector2f &posNE) const
     if (PV_AidingMode != AID_NONE) {
         // This is the normal mode of operation where we can use the EKF position states
         // correct for the IMU offset (EKF calculations are at the IMU)
+#ifdef MY_TEST_NOEKF
+        posNE.x = _mocap_pos.x;
+        posNE.y = _mocap_pos.y;
+#else
         posNE.x = outputDataNew.position.x + posOffsetNED.x;
         posNE.y = outputDataNew.position.y + posOffsetNED.y;
+#endif
         return true;
 
     } else {
@@ -286,6 +305,9 @@ bool NavEKF2_core::getPosD(float &posD) const
     // The EKF always has a height estimate regardless of mode of operation
     // Correct for the IMU offset in body frame (EKF calculations are at the IMU)
     // Also correct for changes to the origin height
+#ifdef MY_TEST_NOEKF
+    posD = _mocap_pos.z;
+#else
     if ((frontend->_originHgtMode & (1<<2)) == 0) {
         // Any sensor height drift corrections relative to the WGS-84 reference are applied to the origin.
         posD = outputDataNew.position.z + posOffsetNED.z;
@@ -294,6 +316,7 @@ bool NavEKF2_core::getPosD(float &posD) const
         // so that height returned by getLLH() = height returned by getOriginLLH - posD
         posD = outputDataNew.position.z + posOffsetNED.z + 0.01f * (float)EKF_origin.alt - (float)ekfGpsRefHgt;
     }
+#endif
 
     // Return the current height solution status
     return filterStatus.flags.vert_pos;
@@ -303,7 +326,11 @@ bool NavEKF2_core::getPosD(float &posD) const
 // return the estimated height of body frame origin above ground level
 bool NavEKF2_core::getHAGL(float &HAGL) const
 {
+#ifdef MY_TEST_NOEKF
+    HAGL = -_mocap_pos.z;
+#else
     HAGL = terrainState - outputDataNew.position.z - posOffsetNED.z;
+#endif
     // If we know the terrain offset and altitude, then we have a valid height above ground estimate
     return !hgtTimeout && gndOffsetValid && healthy();
 }
@@ -328,7 +355,11 @@ bool NavEKF2_core::getLLH(struct Location &loc) const
             loc.lat = EKF_origin.lat;
             loc.lng = EKF_origin.lng;
             // correct for IMU offset (EKF calculations are at the IMU position)
+#ifdef MY_TEST_NOEKF
+            location_offset(loc, _mocap_pos.x, _mocap_pos.y);
+#else
             location_offset(loc, (outputDataNew.position.x + posOffsetNED.x), (outputDataNew.position.y + posOffsetNED.y));
+#endif
             return true;
         } else {
             // we could be in constant position mode  because the vehicle has taken off without GPS, or has lost GPS
