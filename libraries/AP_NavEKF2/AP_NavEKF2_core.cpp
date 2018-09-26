@@ -90,6 +90,9 @@ bool NavEKF2_core::setup_core(NavEKF2 *_frontend, uint8_t _imu_index, uint8_t _c
     if(!storedExtNav.init(OBS_BUFFER_LENGTH)) {
         return false;
     }
+    if(!storedVisionSpeed.init(OBS_BUFFER_LENGTH)) {
+       return false;
+    }
     if(!storedIMU.init(imu_buffer_length)) {
         return false;
     }
@@ -327,6 +330,11 @@ void NavEKF2_core::InitialiseVariables()
     extNavUsedForPos = false;
     extNavYawResetRequest = false;
 
+    memset(&visionSpeedNew, 0, sizeof(visionSpeedNew));
+    memset(&visionSpeedDelayed, 0, sizeof(visionSpeedDelayed));
+    visionSpeedToFuse = false;
+    visionSpeedMeasTime_ms = 0;
+
     // zero data buffers
     storedIMU.reset();
     storedGPS.reset();
@@ -337,6 +345,7 @@ void NavEKF2_core::InitialiseVariables()
     storedOutput.reset();
     storedRangeBeacon.reset();
     storedExtNav.reset();
+    storedVisionSpeed.reset();
 }
 
 // Initialise the states from accelerometer and magnetometer data (if present)

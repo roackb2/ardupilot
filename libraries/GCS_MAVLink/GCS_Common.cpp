@@ -2227,6 +2227,16 @@ void GCS_MAVLINK::log_vision_position_estimate_data(const uint64_t usec,
                                            (double)yaw * (180 / M_PI));
 }
 
+void GCS_MAVLINK::handle_vision_speed_estimate(mavlink_message_t *msg)
+{
+    mavlink_vision_speed_estimate_t m;
+    mavlink_msg_vision_speed_estimate_decode(msg, &m);
+
+    const Vector3f vel = {m.x, m.y, m.z};
+    uint32_t timestamp_ms = correct_offboard_timestamp_usec_to_ms(m.usec, PAYLOAD_SIZE(chan, VISION_SPEED_ESTIMATE));
+    AP::ahrs().writeVisionSpeed(vel, timestamp_ms);
+}
+
 void GCS_MAVLINK::handle_att_pos_mocap(mavlink_message_t *msg)
 {
     mavlink_att_pos_mocap_t m;
@@ -2401,6 +2411,10 @@ void GCS_MAVLINK::handle_common_message(mavlink_message_t *msg)
 
     case MAVLINK_MSG_ID_GLOBAL_VISION_POSITION_ESTIMATE:
         handle_global_vision_position_estimate(msg);
+        break;
+
+    case MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE:
+        handle_vision_speed_estimate(msg);
         break;
 
     case MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE:

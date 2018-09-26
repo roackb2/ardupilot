@@ -335,6 +335,7 @@ public:
      *
     */
     void writeExtNavData(const Vector3f &sensOffset, const Vector3f &pos, const Quaternion &quat, float posErr, float angErr, uint32_t timeStamp_ms, uint32_t resetTime_ms);
+    void writeVisionSpeed(const Vector3f &vel, uint32_t timeStamp_ms);
 
 private:
     uint8_t num_cores; // number of allocated cores

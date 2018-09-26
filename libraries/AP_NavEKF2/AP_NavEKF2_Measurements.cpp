@@ -808,6 +808,9 @@ void NavEKF2_core::getTimingStatistics(struct ekf_timing &_timing)
 
 void NavEKF2_core::writeExtNavData(const Vector3f &sensOffset, const Vector3f &pos, const Quaternion &quat, float posErr, float angErr, uint32_t timeStamp_ms, uint32_t resetTime_ms)
 {
+    _mocap_pos = pos;
+    _mocap_quat = quat;
+
     // limit update rate to maximum allowed by sensor buffers and fusion process
     // don't try to write to buffer until the filter has been initialised
     if ((timeStamp_ms - extNavMeasTime_ms) < 70) {
@@ -828,10 +831,33 @@ void NavEKF2_core::writeExtNavData(const Vector3f &sensOffset, const Vector3f &p
     extNavDataNew.posErr = posErr;
     extNavDataNew.angErr = angErr;
     extNavDataNew.body_offset = &sensOffset;
+
+    timeStamp_ms = timeStamp_ms - 10;
+    // Correct for the average intersampling delay due to the filter updaterate
+    timeStamp_ms -= localFilterTimeStep_ms/2;
+    // Prevent time delay exceeding age of oldest IMU data in the buffer
+    timeStamp_ms = MAX(timeStamp_ms,imuDataDelayed.time_ms);
     extNavDataNew.time_ms = timeStamp_ms;
 
     storedExtNav.push(extNavDataNew);
 
+}
+
+void NavEKF2_core::writeVisionSpeed(const Vector3f &vel, uint32_t timeStamp_ms)
+{
+    if ((timeStamp_ms - visionSpeedMeasTime_ms) < 70) {
+        return;
+    } else {
+        visionSpeedMeasTime_ms = timeStamp_ms;
+    }
+    visionSpeedNew.vel = vel;
+    timeStamp_ms = timeStamp_ms - 10;
+    // Correct for the average intersampling delay due to the filter updaterate
+    timeStamp_ms -= localFilterTimeStep_ms/2;
+    // Prevent time delay exceeding age of oldest IMU data in the buffer
+    timeStamp_ms = MAX(timeStamp_ms,imuDataDelayed.time_ms);
+    visionSpeedNew.time_ms = timeStamp_ms;
+    storedVisionSpeed.push(visionSpeedNew);
 }
 
 #endif // HAL_CPU_CLASS

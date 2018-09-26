@@ -1480,4 +1480,13 @@ void NavEKF2::writeExtNavData(const Vector3f &sensOffset, const Vector3f &pos, c
     }
 }
 
+void NavEKF2::writeVisionSpeed(const Vector3f &vel, uint32_t timeStamp_ms)
+{
+    if (core) {
+        for (uint8_t i=0; i<num_cores; i++) {
+            core[i].writeVisionSpeed(vel, timeStamp_ms);
+        }
+    }
+}
+
 #endif //HAL_CPU_CLASS

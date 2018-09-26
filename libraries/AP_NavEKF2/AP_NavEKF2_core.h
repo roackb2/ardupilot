@@ -320,8 +320,12 @@ public:
      *
     */
     void writeExtNavData(const Vector3f &sensOffset, const Vector3f &pos, const Quaternion &quat, float posErr, float angErr, uint32_t timeStamp_ms, uint32_t resetTime_ms);
+    void writeVisionSpeed(const Vector3f &vel, uint32_t timeStamp_ms);
 
 private:
+    Vector3f _mocap_pos;
+    Quaternion _mocap_quat;
+
     // Reference to the global EKF frontend for parameters
     NavEKF2 *frontend;
     uint8_t imu_index;
@@ -466,6 +470,11 @@ private:
         const Vector3f *body_offset;// pointer to XYZ position of the sensor in body frame (m)
         uint32_t        time_ms;    // measurement timestamp (msec)
         bool            posReset;   // true when the position measurement has been reset
+    };
+
+    struct vision_speed_elements {
+        Vector3f vel;
+        uint32_t time_ms;
     };
 
     // update the navigation filter status
@@ -1093,6 +1102,12 @@ private:
     bool extNavUsedForYaw;              // true when the external nav data is also being used as a yaw observation
     bool extNavUsedForPos;              // true when the external nav data is being used as a position reference.
     bool extNavYawResetRequest;         // true when a reset of vehicle yaw using the external nav data is requested
+
+    obs_ring_buffer_t<vision_speed_elements> storedVisionSpeed;
+    vision_speed_elements visionSpeedNew;
+    vision_speed_elements visionSpeedDelayed;
+    uint32_t visionSpeedMeasTime_ms;
+    bool visionSpeedToFuse;
 
     // flags indicating severe numerical errors in innovation variance calculation for different fusion operations
     struct {
