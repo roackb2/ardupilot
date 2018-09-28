@@ -42,6 +42,12 @@ void NavEKF2_core::ResetVelocity(void)
             // clear the timeout flags and counters
             velTimeout = false;
             lastVelPassTime_ms = imuSampleTime_ms;
+        } else if (imuSampleTime_ms - visionSpeedMeasTime_ms < 250) {
+            stateStruct.velocity.x = visionSpeedNew.vel.x;
+            stateStruct.velocity.y = visionSpeedNew.vel.y;
+            P[4][4] = P[3][3] = sq(frontend->_gpsHorizVelNoise);
+            velTimeout = false;
+            lastVelPassTime_ms = imuSampleTime_ms;
         } else {
             stateStruct.velocity.x  = 0.0f;
             stateStruct.velocity.y  = 0.0f;
@@ -111,12 +117,12 @@ void NavEKF2_core::ResetPosition(void)
             // clear the timeout flags and counters
             rngBcnTimeout = false;
             lastRngBcnPassTime_ms = imuSampleTime_ms;
-        } else if (imuSampleTime_ms - extNavDataDelayed.time_ms < 250) {
-            // use the range beacon data as a second preference
-            stateStruct.position.x = extNavDataDelayed.pos.x;
-            stateStruct.position.y = extNavDataDelayed.pos.y;
-            // set the variances from the beacon alignment filter
-            P[7][7] = P[6][6] = sq(extNavDataDelayed.posErr);
+        } else if (imuSampleTime_ms - extNavMeasTime_ms < 250) {
+            stateStruct.position.x = extNavDataNew.pos.x;
+            stateStruct.position.y = extNavDataNew.pos.y;
+            P[7][7] = P[6][6] = sq(extNavDataNew.posErr);
+            posTimeout = false;
+            lastPosPassTime_ms = imuSampleTime_ms;
         }
     }
     for (uint8_t i=0; i<imu_buffer_length; i++) {
@@ -461,6 +467,9 @@ void NavEKF2_core::FuseVelPosNED()
                 // use GPS receivers reported speed accuracy if available and floor at value set by GPS velocity noise parameter
                 R_OBS[0] = sq(constrain_float(gpsSpdAccuracy, frontend->_gpsHorizVelNoise, 50.0f));
                 R_OBS[2] = sq(constrain_float(gpsSpdAccuracy, frontend->_gpsVertVelNoise, 50.0f));
+            } else if (visionSpeedToFuse) {
+                R_OBS[0] = sq(constrain_float(frontend->_gpsHorizVelNoise, 0.01f, 5.0f));
+                R_OBS[2] = sq(constrain_float(frontend->_gpsVertVelNoise,  0.01f, 5.0f));
             } else {
                 // calculate additional error in GPS velocity caused by manoeuvring
                 R_OBS[0] = sq(constrain_float(frontend->_gpsHorizVelNoise, 0.05f, 5.0f)) + sq(frontend->gpsNEVelVarAccScale * accNavMag);
@@ -470,6 +479,8 @@ void NavEKF2_core::FuseVelPosNED()
             // Use GPS reported position accuracy if available and floor at value set by GPS position noise parameter
             if (gpsPosAccuracy > 0.0f) {
                 R_OBS[3] = sq(constrain_float(gpsPosAccuracy, frontend->_gpsHorizPosNoise, 100.0f));
+            } else if (extNavUsedForPos) {
+                R_OBS[3] = sq(constrain_float(extNavDataDelayed.posErr, 0.01f, 10.0f));
             } else {
                 R_OBS[3] = sq(constrain_float(frontend->_gpsHorizPosNoise, 0.1f, 10.0f)) + sq(posErr);
             }
@@ -887,7 +898,7 @@ void NavEKF2_core::selectHeightForFusion()
     // Select the height measurement source
     if (extNavDataToFuse && (activeHgtSource == HGT_SOURCE_EV)) {
         hgtMea = -extNavDataDelayed.pos.z;
-        posDownObsNoise = sq(constrain_float(extNavDataDelayed.posErr, 0.1f, 10.0f));
+        posDownObsNoise = sq(constrain_float(extNavDataDelayed.posErr, 0.01f, 10.0f));
     } else if (rangeDataToFuse && (activeHgtSource == HGT_SOURCE_RNG)) {
         // using range finder data
         // correct for tilt using a flat earth model
