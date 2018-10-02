@@ -496,7 +496,7 @@ void NavEKF2_core::FuseVelPosNED()
         // if vertical GPS velocity data and an independent height source is being used, check to see if the GPS vertical velocity and altimeter
         // innovations have the same sign and are outside limits. If so, then it is likely aliasing is affecting
         // the accelerometers and we should disable the GPS and barometer innovation consistency checks.
-        if (fuseVelData && (frontend->_altSource != 2)) {
+        if (useGpsVertVel && fuseVelData && (frontend->_altSource != 2)) {
             // calculate innovations for height and vertical GPS vel measurements
             float hgtErr  = stateStruct.position.z - velPosObs[5];
             float velDErr = stateStruct.velocity.z - velPosObs[2];
@@ -554,6 +554,10 @@ void NavEKF2_core::FuseVelPosNED()
         if (fuseVelData) {
             // test velocity measurements
             uint8_t imax = 2;
+            // Don't fuse vertical velocity observations if inhibited by the user or if we are using synthetic data
+            //if (frontend->_fusionModeGPS > 0 || PV_AidingMode != AID_ABSOLUTE || frontend->inhibitGpsVertVelUse) {
+            //    imax = 1;
+            //}
             float innovVelSumSq = 0; // sum of squares of velocity innovations
             float varVelSum = 0; // sum of velocity innovation variances
             for (uint8_t i = 0; i<=imax; i++) {

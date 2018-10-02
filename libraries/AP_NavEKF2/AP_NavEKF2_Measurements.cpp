@@ -850,6 +850,7 @@ void NavEKF2_core::writeVisionSpeed(const Vector3f &vel, uint32_t timeStamp_ms)
     } else {
         visionSpeedMeasTime_ms = timeStamp_ms;
     }
+    useGpsVertVel = true;
     visionSpeedNew.vel = vel;
     timeStamp_ms = timeStamp_ms - 10;
     // Correct for the average intersampling delay due to the filter updaterate
