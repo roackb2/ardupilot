@@ -3214,14 +3214,14 @@ uint32_t GCS_MAVLINK::correct_offboard_timestamp_usec_to_ms(uint64_t offboard_us
 {
     const uint32_t max_lag_us = 500*1000UL;
     uint64_t local_us;
-
+/*
     if (offboard_usec > (24*60*60*1000000UL)) {
         int64_t rtc_shift = AP::rtc().rtc_shift;
         if (rtc_shift > 0) {
             return (offboard_usec - rtc_shift) * 0.001;
         }
     }
-
+*/
     // if the HAL supports it then constrain the latest possible time
     // the packet could have been sent by the uart receive time and
     // the baudrate and packet size.
