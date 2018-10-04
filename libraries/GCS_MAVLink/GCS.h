@@ -637,6 +637,7 @@ private:
     virtual void handle_change_alt_request(AP_Mission::Mission_Command &cmd) = 0;
     void handle_common_mission_message(mavlink_message_t *msg);
 
+    void handle_vision_speed_estimate(mavlink_message_t *msg);
     void handle_vicon_position_estimate(mavlink_message_t *msg);
     void handle_vision_position_estimate(mavlink_message_t *msg);
     void handle_global_vision_position_estimate(mavlink_message_t *msg);
