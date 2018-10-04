@@ -1492,3 +1492,15 @@ void NavEKF2::writeExtNavData(const Vector3f &sensOffset, const Vector3f &pos, c
     }
 }
 
+/* Write velocity data from an external navigation system
+ * vel : velocity in NED (m)
+ * timeStamp_ms : system time the measurement was taken, not the time it was received (mSec)
+*/
+void NavEKF2::writeVisionSpeed(const Vector3f &vel, uint32_t timeStamp_ms)
+{
+    if (core) {
+        for (uint8_t i=0; i<num_cores; i++) {
+            core[i].writeVisionSpeed(vel, timeStamp_ms);
+        }
+    }
+}

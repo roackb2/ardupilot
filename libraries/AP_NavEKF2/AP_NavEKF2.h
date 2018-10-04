@@ -336,6 +336,12 @@ public:
     */
     void writeExtNavData(const Vector3f &sensOffset, const Vector3f &pos, const Quaternion &quat, float posErr, float angErr, uint32_t timeStamp_ms, uint32_t resetTime_ms);
 
+    /* Write velocity data from an external navigation system
+     * vel : velocity in NED (m)
+     * timeStamp_ms : system time the measurement was taken, not the time it was received (mSec)
+    */
+    void writeVisionSpeed(const Vector3f &vel, uint32_t timeStamp_ms);
+
 private:
     uint8_t num_cores; // number of allocated cores
     uint8_t primary;   // current primary core
