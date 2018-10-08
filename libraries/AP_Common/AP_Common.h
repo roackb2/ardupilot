@@ -119,6 +119,7 @@ struct PACKED Location_Option_Flags {
     uint8_t terrain_alt  : 1;           // this altitude is above terrain
     uint8_t origin_alt   : 1;           // this altitude is above ekf origin
     uint8_t loiter_xtrack : 1;          // 0 to crosstrack from center of waypoint, 1 to crosstrack from tangent exit location
+    uint8_t local_frame :1;             // 1 if lat/lng is N/E postion vector in centimeters relative to ekf origin
 };
 
 struct PACKED Location {
