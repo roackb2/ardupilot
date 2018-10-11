@@ -832,7 +832,7 @@ void NavEKF2_core::writeExtNavData(const Vector3f &sensOffset, const Vector3f &p
     extNavDataNew.angErr = angErr;
     extNavDataNew.body_offset = &sensOffset;
 
-    timeStamp_ms = timeStamp_ms - 10;
+    timeStamp_ms = timeStamp_ms - frontend->_extnavDelay_ms;
     // Correct for the average intersampling delay due to the filter updaterate
     timeStamp_ms -= localFilterTimeStep_ms/2;
     // Prevent time delay exceeding age of oldest IMU data in the buffer
@@ -852,7 +852,7 @@ void NavEKF2_core::writeVisionSpeed(const Vector3f &vel, uint32_t timeStamp_ms)
     }
     useGpsVertVel = true;
     visionSpeedNew.vel = vel;
-    timeStamp_ms = timeStamp_ms - 10;
+    timeStamp_ms = timeStamp_ms - frontend->_extnavDelay_ms;
     // Correct for the average intersampling delay due to the filter updaterate
     timeStamp_ms -= localFilterTimeStep_ms/2;
     // Prevent time delay exceeding age of oldest IMU data in the buffer
