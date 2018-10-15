@@ -140,9 +140,9 @@ void Copter::ModeAuto::takeoff_start(const Location& dest_loc)
     if (dest_loc.flags.local_frame) {
         float dest_alt = dest_loc.alt;
         const Vector3f& curr_pos = inertial_nav.get_position();
-        //you can't go lower than you currently are and you can't takeoff to less than 100cm above
-        if (dest_loc.alt < curr_pos.z || ((dest_loc.alt - curr_pos.z) < 100)) {
-            dest_alt = curr_pos.z + 100;
+        //you can't go lower than you currently are
+        if (dest_loc.alt < curr_pos.z) {
+            dest_alt = curr_pos.z;
         }
         // no need to check return status because terrain data is not used
         wp_nav->set_wp_destination(Vector3f(curr_pos.x, curr_pos.y, dest_alt), false);
