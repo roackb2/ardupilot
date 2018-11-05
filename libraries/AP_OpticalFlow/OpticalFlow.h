@@ -40,10 +40,10 @@ public:
     void init(void);
 
     // enabled - returns true if optical flow is enabled
-    bool enabled() const { return _enabled; }
+    bool enabled() const { return false; }
 
     // healthy - return true if the sensor is healthy
-    bool healthy() const { return backend != nullptr && _flags.healthy; }
+    bool healthy() const { return false; }
 
     // read latest values from sensor and fill in x,y and totals.
     void update(void);

@@ -1,0 +1,31 @@
+# hw definition file for processing by chibios_pins.py
+# new F412 layout - and shrunk to fit in 
+
+include ../skyviper-f412/hwdef.dat
+
+# flash size
+undef FLASH_SIZE_KB
+FLASH_SIZE_KB 512
+
+define SOLO_SUPPORT_ENABLED DISABLED
+
+# remove features:
+define COMPASSMOT_ENABLED DISABLED
+define PREARM_PID_CHECKS_ENABLED DISABLED
+
+define AP_RADIO_CC2500 0
+define AP_RADIO_CYRF6936 0
+
+# short name for use by system ID string
+undef CHIBIOS_SHORT_BOARD_NAME
+define CHIBIOS_SHORT_BOARD_NAME "SRT-F412-h"
+
+STUB_OUT AP_GPS
+STUB_OUT AP_Compass
+STUB_OUT AP_Beacon
+STUB_OUT AP_NavEKF3
+STUB_FILE_OUT GCS_Mission
+
+define HAL_USE_BARO_INAV
+
+

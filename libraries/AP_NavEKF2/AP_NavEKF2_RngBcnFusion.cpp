@@ -19,19 +19,6 @@ extern const AP_HAL::HAL& hal;
 // select fusion of range beacon measurements
 void NavEKF2_core::SelectRngBcnFusion()
 {
-    // read range data from the sensor and check for new data in the buffer
-    readRngBcnData();
-
-    // Determine if we need to fuse range beacon data on this time step
-    if (rngBcnDataToFuse) {
-        if (PV_AidingMode == AID_ABSOLUTE) {
-            // Normal operating mode is to fuse the range data into the main filter
-            FuseRngBcn();
-        } else {
-            // If we aren't able to use the data in the main filter, use a simple 3-state filter to estimte position only
-            FuseRngBcnStatic();
-        }
-    }
 }
 
 void NavEKF2_core::FuseRngBcn()

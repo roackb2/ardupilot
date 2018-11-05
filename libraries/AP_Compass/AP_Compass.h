@@ -136,7 +136,7 @@ public:
 
     void cancel_calibration_all();
 
-    bool compass_cal_requires_reboot() const { return _cal_complete_requires_reboot; }
+    bool compass_cal_requires_reboot() const { return false; }
     bool is_calibrating() const;
 
     /*
@@ -151,8 +151,8 @@ public:
     bool consistent() const;
 
     /// Return the health of a compass
-    bool healthy(uint8_t i) const { return _state[i].healthy; }
-    bool healthy(void) const { return healthy(get_primary()); }
+    bool healthy(uint8_t i) const { return true; }
+    bool healthy(void) const { return true; }
     uint8_t get_healthy_mask() const;
 
     /// Returns the current offset values

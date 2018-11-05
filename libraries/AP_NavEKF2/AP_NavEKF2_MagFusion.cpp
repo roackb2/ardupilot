@@ -175,53 +175,6 @@ void NavEKF2_core::controlMagYawReset()
 // vector from GPS. It is used to align the yaw angle after launch or takeoff.
 void NavEKF2_core::realignYawGPS()
 {
-    if ((sq(gpsDataDelayed.vel.x) + sq(gpsDataDelayed.vel.y)) > 25.0f) {
-        // get quaternion from existing filter states and calculate roll, pitch and yaw angles
-        Vector3f eulerAngles;
-        stateStruct.quat.to_euler(eulerAngles.x, eulerAngles.y, eulerAngles.z);
-
-        // calculate course yaw angle
-        float velYaw = atan2f(stateStruct.velocity.y,stateStruct.velocity.x);
-
-        // calculate course yaw angle from GPS velocity
-        float gpsYaw = atan2f(gpsDataDelayed.vel.y,gpsDataDelayed.vel.x);
-
-        // Check the yaw angles for consistency
-        float yawErr = MAX(fabsf(wrap_PI(gpsYaw - velYaw)),fabsf(wrap_PI(gpsYaw - eulerAngles.z)));
-
-        // If the angles disagree by more than 45 degrees and GPS innovations are large or no previous yaw alignment, we declare the magnetic yaw as bad
-        badMagYaw = ((yawErr > 0.7854f) && (velTestRatio > 1.0f) && (PV_AidingMode == AID_ABSOLUTE)) || !yawAlignComplete;
-
-        // correct yaw angle using GPS ground course if compass yaw bad
-        if (badMagYaw) {
-
-            // calculate new filter quaternion states from Euler angles
-            stateStruct.quat.from_euler(eulerAngles.x, eulerAngles.y, gpsYaw);
-            // reset the velocity and position states as they will be inaccurate due to bad yaw
-            ResetVelocity();
-            ResetPosition();
-
-            // send yaw alignment information to console
-            gcs().send_text(MAV_SEVERITY_INFO, "EKF2 IMU%u yaw aligned to GPS velocity",(unsigned)imu_index);
-
-            // zero the attitude covariances becasue the corelations will now be invalid
-            zeroAttCovOnly();
-
-            // record the yaw reset event
-            recordYawReset();
-
-            // clear all pending yaw reset requests
-            gpsYawResetRequest = false;
-            magYawResetRequest = false;
-
-            if (use_compass()) {
-                // request a mag field reset which may enable us to use the magnetoemter if the previous fault was due to bad initialisation
-                magStateResetRequest = true;
-                // clear the all sensors failed status so that the magnetometers sensors get a second chance now that we are flying
-                allMagSensorsFailed = false;
-            }
-        }
-    }
 }
 
 /********************************************************
@@ -231,90 +184,6 @@ void NavEKF2_core::realignYawGPS()
 // select fusion of magnetometer data
 void NavEKF2_core::SelectMagFusion()
 {
-    // start performance timer
-    hal.util->perf_begin(_perf_FuseMagnetometer);
-
-    // clear the flag that lets other processes know that the expensive magnetometer fusion operation has been perfomred on that time step
-    // used for load levelling
-    magFusePerformed = false;
-
-    // check for and read new magnetometer measurements
-    readMagData();
-
-    // If we are using the compass and the magnetometer has been unhealthy for too long we declare a timeout
-    if (magHealth) {
-        magTimeout = false;
-        lastHealthyMagTime_ms = imuSampleTime_ms;
-    } else if ((imuSampleTime_ms - lastHealthyMagTime_ms) > frontend->magFailTimeLimit_ms && use_compass()) {
-        magTimeout = true;
-    }
-
-    // check for availability of magnetometer data to fuse
-    magDataToFuse = storedMag.recall(magDataDelayed,imuDataDelayed.time_ms);
-
-    // Control reset of yaw and magnetic field states if we are using compass data
-    if (magDataToFuse && use_compass()) {
-        controlMagYawReset();
-    }
-
-    // determine if conditions are right to start a new fusion cycle
-    // wait until the EKF time horizon catches up with the measurement
-    bool dataReady = (magDataToFuse && statesInitialised && use_compass() && yawAlignComplete);
-    if (dataReady) {
-        // use the simple method of declination to maintain heading if we cannot use the magnetic field states
-        if(inhibitMagStates || magStateResetRequest || !magStateInitComplete) {
-            fuseEulerYaw();
-            // zero the test ratio output from the inactive 3-axis magnetometer fusion
-            magTestRatio.zero();
-        } else {
-            // if we are not doing aiding with earth relative observations (eg GPS) then the declination is
-            // maintained by fusing declination as a synthesised observation
-            if (PV_AidingMode != AID_ABSOLUTE) {
-                FuseDeclination(0.34f);
-            }
-            // fuse the three magnetometer componenents sequentially
-            for (mag_state.obsIndex = 0; mag_state.obsIndex <= 2; mag_state.obsIndex++) {
-                hal.util->perf_begin(_perf_test[0]);
-                FuseMagnetometer();
-                hal.util->perf_end(_perf_test[0]);
-                // don't continue fusion if unhealthy
-                if (!magHealth) {
-                    break;
-                }
-            }
-            // zero the test ratio output from the inactive simple magnetometer yaw fusion
-            yawTestRatio = 0.0f;
-        }
-    }
-
-    // If we have no magnetometer and are on the ground, fuse in a synthetic heading measurement to prevent the
-    // filter covariances from becoming badly conditioned
-    if (!use_compass()) {
-        if (onGround && (imuSampleTime_ms - lastYawTime_ms > 1000)) {
-            fuseEulerYaw();
-            magTestRatio.zero();
-            yawTestRatio = 0.0f;
-        }
-    }
-
-    // If the final yaw reset has been performed and the state variances are sufficiently low
-    // record that the earth field has been learned.
-    if (!magFieldLearned && finalInflightMagInit) {
-        magFieldLearned = (P[16][16] < sq(0.01f)) && (P[17][17] < sq(0.01f)) && (P[18][18] < sq(0.01f));
-    }
-
-    // record the last learned field variances
-    if (magFieldLearned && !inhibitMagStates) {
-        earthMagFieldVar.x = P[16][16];
-        earthMagFieldVar.y = P[17][17];
-        earthMagFieldVar.z = P[18][18];
-        bodyMagFieldVar.x = P[19][19];
-        bodyMagFieldVar.y = P[20][20];
-        bodyMagFieldVar.z = P[21][21];
-    }
-
-    // stop performance timer
-    hal.util->perf_end(_perf_FuseMagnetometer);
 }
 
 /*
@@ -1123,34 +992,6 @@ void NavEKF2_core::FuseDeclination(float declErr)
 // align the NE earth magnetic field states with the published declination
 void NavEKF2_core::alignMagStateDeclination()
 {
-    // don't do this if we already have a learned magnetic field
-    if (magFieldLearned) {
-        return;
-    }
-
-    // get the magnetic declination
-    float magDecAng = use_compass() ? _ahrs->get_compass()->get_declination() : 0;
-
-    // rotate the NE values so that the declination matches the published value
-    Vector3f initMagNED = stateStruct.earth_magfield;
-    float magLengthNE = norm(initMagNED.x,initMagNED.y);
-    stateStruct.earth_magfield.x = magLengthNE * cosf(magDecAng);
-    stateStruct.earth_magfield.y = magLengthNE * sinf(magDecAng);
-
-    if (!inhibitMagStates) {
-        // zero the corresponding state covariances if magnetic field state learning is active
-        float var_16 = P[16][16];
-        float var_17 = P[17][17];
-        zeroRows(P,16,17);
-        zeroCols(P,16,17);
-        P[16][16] = var_16;
-        P[17][17] = var_17;
-
-        // fuse the declination angle to establish covariances and prevent large swings in declination
-        // during initial fusion
-        FuseDeclination(0.1f);
-
-    }
 }
 
 // record a magentic field state reset event
