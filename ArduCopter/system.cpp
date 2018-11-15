@@ -401,7 +401,7 @@ void Copter::update_auto_armed()
 #else
         // if motors are armed and throttle is above zero auto_armed should be true
         // if motors are armed and we are in throw mode, then auto_armed should be true
-        if(motors->armed() && (!ap.throttle_zero || control_mode == THROW)) {
+        if(motors->armed()) {
             set_auto_armed(true);
         }
 #endif // HELI_FRAME
