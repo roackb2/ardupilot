@@ -158,7 +158,7 @@ void Copter::failsafe_ekf_event()
         case FS_EKF_ACTION_LAND:
         case FS_EKF_ACTION_LAND_EVEN_STABILIZE:
         default:
-            set_mode_land_with_pause(MODE_REASON_EKF_FAILSAFE);
+            set_mode(LAND, MODE_REASON_EKF_FAILSAFE);
             break;
     }
 }
