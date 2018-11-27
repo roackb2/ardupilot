@@ -8,7 +8,7 @@
  */
 
 #ifndef EKF_CHECK_ITERATIONS_MAX
- # define EKF_CHECK_ITERATIONS_MAX          10      // 1 second (ie. 10 iterations at 10hz) of bad variances signals a failure
+ # define EKF_CHECK_ITERATIONS_MAX          2      // 1 second (ie. 10 iterations at 10hz) of bad variances signals a failure
 #endif
 
 #ifndef EKF_CHECK_WARNING_TIME
@@ -158,7 +158,7 @@ void Copter::failsafe_ekf_event()
         case FS_EKF_ACTION_LAND:
         case FS_EKF_ACTION_LAND_EVEN_STABILIZE:
         default:
-            set_mode_land_with_pause(MODE_REASON_EKF_FAILSAFE);
+            set_mode(LAND, MODE_REASON_EKF_FAILSAFE);
             break;
     }
 }
