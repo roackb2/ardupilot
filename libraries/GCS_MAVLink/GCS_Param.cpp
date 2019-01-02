@@ -134,7 +134,7 @@ void GCS_MAVLINK::handle_request_data_stream(mavlink_message_t *msg)
     if (packet.start_stop == 0)
         freq = 0;                     // stop sending
     else if (packet.start_stop == 1)
-        freq = packet.req_message_rate;                     // start sending
+        freq = 1;                     // start sending
     else
         return;
 
