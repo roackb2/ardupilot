@@ -16,6 +16,8 @@ static Vector3f guided_vel_target_cms;      // velocity target (used by velocity
 static uint32_t posvel_update_time_ms;      // system time of last target update to posvel controller (i.e. position and velocity update)
 static uint32_t vel_update_time_ms;         // system time of last target update to velocity controller
 
+//static uint32_t _my_last_gcs_send = 0;
+
 struct {
     uint32_t update_time_ms;
     float roll_cd;
@@ -420,6 +422,13 @@ void Copter::Mode::auto_takeoff_run()
 // called from guided_run
 void Copter::ModeGuided::pos_control_run()
 {
+    /*uint32_t now = AP_HAL::millis();
+    if ((now - _my_last_gcs_send) > 4600) {
+        Vector3f curr_pos = inertial_nav.get_position();
+        gcs().send_text(MAV_SEVERITY_INFO, "%3.1f %3.1f", curr_pos.x, curr_pos.y);
+        _my_last_gcs_send = now;
+    }*/
+
     // if not auto armed or motors not enabled set throttle to zero and exit immediately
     if (!motors->armed() || !ap.auto_armed || !motors->get_interlock() || ap.land_complete) {
         zero_throttle_and_relax_ac();

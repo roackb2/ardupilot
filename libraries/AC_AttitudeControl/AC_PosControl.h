@@ -392,6 +392,7 @@ protected:
     float       _leash;                 // horizontal leash length in cm.  target will never be further than this distance from the vehicle
     float       _leash_down_z;          // vertical leash down in cm.  target will never be further than this distance below the vehicle
     float       _leash_up_z;            // vertical leash up in cm.  target will never be further than this distance above the vehicle
+    uint32_t    _last_gcs_send = 0;
 
     // output from controller
     float       _roll_target;           // desired roll angle in centi-degrees calculated by position controller
