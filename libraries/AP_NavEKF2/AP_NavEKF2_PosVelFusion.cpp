@@ -7,6 +7,7 @@
 #include <AP_AHRS/AP_AHRS.h>
 #include <AP_Vehicle/AP_Vehicle.h>
 #include <AP_RangeFinder/RangeFinder_Backend.h>
+#include <GCS_MAVLink/GCS.h>
 
 #include <stdio.h>
 
@@ -544,6 +545,7 @@ void NavEKF2_core::FuseVelPosNED()
                     // Reset the normalised innovation to avoid failing the bad fusion tests
                     posTestRatio = 0.0f;
                     velTestRatio = 0.0f;
+                    gcs().send_text(MAV_SEVERITY_INFO, "pos reset");
                 }
             } else {
                 posHealth = false;
@@ -589,7 +591,15 @@ void NavEKF2_core::FuseVelPosNED()
                     fuseVelData = false;
                     // Reset the normalised innovation to avoid failing the bad fusion tests
                     velTestRatio = 0.0f;
-                }
+                } /*else if (fabsf(velInnov.x) > 0.05f || fabsf(velInnov.y) > 0.05f) {
+                    // reset the velocity to the GPS velocity
+                    ResetVelocity();
+                    // don't fuse GPS velocity data on this time step
+                    fuseVelData = false;
+                    // Reset the normalised innovation to avoid failing the bad fusion tests
+                    velTestRatio = 0.0f;
+                    gcs().send_text(MAV_SEVERITY_INFO, "vel reset");
+                }*/
             } else {
                 velHealth = false;
             }
