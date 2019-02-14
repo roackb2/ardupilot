@@ -536,7 +536,8 @@ void  NavEKF2_core::getFilterTimeouts(uint8_t &timeouts) const
                 velTimeout<<1 |
                 hgtTimeout<<2 |
                 magTimeout<<3 |
-                tasTimeout<<4);
+                tasTimeout<<4 |
+                extNavTimeout<<5);
 }
 
 // Return the navigation filter status message

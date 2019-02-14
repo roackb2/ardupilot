@@ -80,6 +80,23 @@ void Copter::ekf_check()
         }
     }
 
+    uint8_t timeoutStatus = 0;
+    ahrs.get_NavEKF2().getFilterTimeouts(0,timeoutStatus);
+    if (timeoutStatus & 32) {
+        if (!failsafe.extnav) {
+            failsafe.extnav = true;
+            prev_control_mode = control_mode;
+            set_mode(LAND, MODE_REASON_EKF_FAILSAFE);
+            gcs().send_text(MAV_SEVERITY_CRITICAL,"ExtNav lost");
+        }
+    } else {
+        if (failsafe.extnav) {
+            failsafe.extnav = false;
+            set_mode(prev_control_mode, MODE_REASON_GCS_COMMAND);
+            gcs().send_text(MAV_SEVERITY_CRITICAL,"ExtNav recover");
+        }
+    }
+
     // set AP_Notify flags
     AP_Notify::flags.ekf_bad = ekf_check_state.bad_variance;
 

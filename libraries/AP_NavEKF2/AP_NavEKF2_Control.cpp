@@ -522,6 +522,8 @@ void  NavEKF2_core::updateFilterStatus(void)
     filterStatus.flags.using_gps = ((imuSampleTime_ms - lastPosPassTime_ms) < 4000) && (PV_AidingMode == AID_ABSOLUTE);
     filterStatus.flags.gps_glitching = !gpsAccuracyGood && (PV_AidingMode == AID_ABSOLUTE) && !extNavUsedForPos; // GPS glitching is affecting navigation accuracy
     filterStatus.flags.gps_quality_good = gpsGoodToAlign;
+
+    if (extNavMeasTime_ms > 0 && (imuSampleTime_ms - extNavMeasTime_ms > 1000)) extNavTimeout = true; else extNavTimeout = false;
 }
 
 #endif // HAL_CPU_CLASS
