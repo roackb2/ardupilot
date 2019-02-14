@@ -806,12 +806,12 @@ void AC_PosControl::update_xy_controller(float ekfNavVelGainScaler)
     uint32_t now = AP_HAL::millis();
     float dt = (now - _last_update_xy_ms)*0.001f;
 
-    if ((now - _last_gcs_send) > 4600) {
+    /*if ((now - _last_gcs_send) > 4600) {
         //Vector3f curr_pos = _inav.get_position();
         Vector3f my_cur_vel = _inav.get_velocity();
         gcs().send_text(MAV_SEVERITY_INFO, "%3.1f %3.1f %3.1f %3.1f", _vel_target.x, _vel_target.y, my_cur_vel.x, my_cur_vel.y);
         _last_gcs_send = now;
-    }
+    }*/
 
     // sanity check dt
     if (dt >= POSCONTROL_ACTIVE_TIMEOUT_MS*1.0e-3f) {
