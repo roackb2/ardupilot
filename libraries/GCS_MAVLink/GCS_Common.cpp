@@ -2414,7 +2414,6 @@ void GCS_MAVLINK::handle_common_message(mavlink_message_t *msg)
         break;
 
     case MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE:
-    case MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE2:
         handle_vision_speed_estimate(msg);
         break;
 
@@ -2423,7 +2422,6 @@ void GCS_MAVLINK::handle_common_message(mavlink_message_t *msg)
         break;
 
     case MAVLINK_MSG_ID_ATT_POS_MOCAP:
-    case MAVLINK_MSG_ID_ATT_POS_MOCAP2:
         handle_att_pos_mocap(msg);
         break;
 
