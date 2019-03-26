@@ -1486,8 +1486,8 @@ void Copter::mavlink_delay_cb()
     uint32_t tnow = millis();
     if (tnow - last_1hz > 1000) {
         last_1hz = tnow;
-        //gcs_send_heartbeat();
-        //gcs().send_message(MSG_EXTENDED_STATUS1);
+        gcs_send_heartbeat();
+        gcs().send_message(MSG_EXTENDED_STATUS1);
     }
     if (tnow - last_50hz > 20) {
         last_50hz = tnow;
