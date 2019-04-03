@@ -1147,6 +1147,11 @@ void Copter::ModeAuto::do_loiter_unlimited(const AP_Mission::Mission_Command& cm
 void Copter::ModeAuto::do_circle(const AP_Mission::Mission_Command& cmd)
 {
     Location_Class circle_center(cmd.content.location);
+    if (circle_center.flags.local_frame) {
+        copter.circle_nav->set_center(Vector3f(circle_center.lat, circle_center.lng, circle_center.alt));
+        circle_start();
+        return;
+    }
     const Location_Class &current_loc = copter.current_loc;
 
     // default lat/lon to current position if not provided

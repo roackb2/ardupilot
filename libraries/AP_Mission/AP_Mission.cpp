@@ -617,6 +617,9 @@ MAV_MISSION_RESULT AP_Mission::mavlink_int_to_mission_cmd(const mavlink_mission_
 
     case MAV_CMD_NAV_LOITER_TURNS:                      // MAV ID: 18
     {
+#if APM_BUILD_TYPE(APM_BUILD_ArduCopter)
+        local_frame_supported = true;
+#endif
         copy_location = true;
         uint16_t num_turns = packet.param1;              // param 1 is number of times to circle is held in low p1
         uint16_t radius_m = fabsf(packet.param3);        // param 3 is radius in meters is held in high p1
