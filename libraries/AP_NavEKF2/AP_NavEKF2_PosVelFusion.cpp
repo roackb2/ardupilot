@@ -545,7 +545,7 @@ void NavEKF2_core::FuseVelPosNED()
                     // Reset the normalised innovation to avoid failing the bad fusion tests
                     posTestRatio = 0.0f;
                     velTestRatio = 0.0f;
-                    gcs().send_text(MAV_SEVERITY_INFO, "pos reset");
+                    //gcs().send_text(MAV_SEVERITY_INFO, "pos reset");
                 }
             } else {
                 posHealth = false;
