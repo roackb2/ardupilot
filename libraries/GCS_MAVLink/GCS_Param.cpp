@@ -257,6 +257,7 @@ void GCS_MAVLINK::handle_param_set(mavlink_message_t *msg)
     // set the value
     vp->set_float(packet.param_value, var_type);
 
+    if (packet.param_type > 20) return;
     /*
       we force the save if the value is not equal to the old
       value. This copes with the use of override values in
