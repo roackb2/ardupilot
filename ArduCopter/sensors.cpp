@@ -10,6 +10,14 @@ void Copter::read_barometer(void)
     motors->set_air_density_ratio(barometer.get_air_density_ratio());
 }
 
+void Copter::init_uwbloco(void)
+{
+}
+
+void Copter::read_uwbloco(void)
+{
+}
+
 void Copter::init_rangefinder(void)
 {
 #if RANGEFINDER_ENABLED == ENABLED

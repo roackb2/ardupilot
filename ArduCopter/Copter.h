@@ -183,6 +183,7 @@
 #include <SITL/SITL.h>
 #endif
 
+#include <AC_UWBLoco/AC_UWBLoco.h>
 
 class Copter : public AP_HAL::HAL::Callbacks {
 public:
@@ -254,6 +255,8 @@ private:
         LowPassFilterFloat alt_cm_filt; // altitude filter
         int8_t glitch_count;
     } rangefinder_state = { false, false, 0, 0 };
+
+    UWBLoco uwbloco{serial_manager};
 
 #if RPM_ENABLED == ENABLED
     AP_RPM rpm_sensor;
@@ -862,6 +865,8 @@ private:
     void read_barometer(void);
     void init_rangefinder(void);
     void read_rangefinder(void);
+    void init_uwbloco(void);
+    void read_uwbloco(void);
     bool rangefinder_alt_ok();
     void rpm_update();
     void init_compass();
