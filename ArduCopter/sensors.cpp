@@ -12,10 +12,19 @@ void Copter::read_barometer(void)
 
 void Copter::init_uwbloco(void)
 {
+    uwbloco.init();
 }
 
 void Copter::read_uwbloco(void)
-{
+{    
+    float n, e, yaw;
+    if (uwbloco.update(n, e, yaw)) {
+        const Vector3f sensor_offset = {};
+        const Vector3f pos = {n, e, 0};
+        Quaternion attitude;
+        attitude.from_euler(0, 0, yaw);
+        ahrs.writeExtNavData(sensor_offset, pos, attitude, 0, 0, AP_HAL::millis(), 0);
+    }
 }
 
 void Copter::init_rangefinder(void)

@@ -101,6 +101,8 @@ public:
         SerialProtocol_Sbus1 = 15,
         SerialProtocol_ESCTelemetry = 16,
         SerialProtocol_Devo_Telem = 17,
+        SerialProtocol_UWBLocoL = 18,
+        SerialProtocol_UWBLocoR = 19,
     };
 
     // get singleton instance
