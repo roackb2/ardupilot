@@ -472,18 +472,14 @@ void AC_Fence::handle_msg(GCS_MAVLINK &link, mavlink_message_t* msg)
         case MAVLINK_MSG_ID_FENCE_POINT: {
             mavlink_fence_point_t packet;
             mavlink_msg_fence_point_decode(msg, &packet);
-            if (!check_latlng(packet.lat,packet.lng)) {
-                link.send_text(MAV_SEVERITY_WARNING, "Invalid fence point, lat or lng too large");
+            Vector2l point;
+            point.x = packet.lat*1.0e7f;
+            point.y = packet.lng*1.0e7f;
+            if (!_poly_loader.save_point_to_eeprom(packet.idx, point)) {
+                link.send_text(MAV_SEVERITY_WARNING, "Failed to save polygon point, too many points?");
             } else {
-                Vector2l point;
-                point.x = packet.lat*1.0e7f;
-                point.y = packet.lng*1.0e7f;
-                if (!_poly_loader.save_point_to_eeprom(packet.idx, point)) {
-                    link.send_text(MAV_SEVERITY_WARNING, "Failed to save polygon point, too many points?");
-                } else {
-                    // trigger reload of points
-                    _boundary_loaded = false;
-                }
+                // trigger reload of points
+                _boundary_loaded = false;
             }
             break;
         }
@@ -527,26 +523,15 @@ bool AC_Fence::load_polygon_from_eeprom(bool force_reload)
         return false;
     }
 
-    // get current location from EKF
-    Location temp_loc;
-    if (!_ahrs.get_location(temp_loc)) {
-        return false;
-    }
-    struct Location ekf_origin {};
-    _ahrs.get_origin(ekf_origin);
-
     // sanity check total
     _total = constrain_int16(_total, 0, _poly_loader.max_points());
 
     // load each point from eeprom
-    Vector2l temp_latlon;
+    Vector2l point;
     for (uint16_t index=0; index<_total; index++) {
         // load boundary point as lat/lon point
-        _poly_loader.load_point_from_eeprom(index, temp_latlon);
-        // move into location structure and convert to offset from ekf origin
-        temp_loc.lat = temp_latlon.x;
-        temp_loc.lng = temp_latlon.y;
-        _boundary[index] = location_diff(ekf_origin, temp_loc) * 100.0f;
+        _poly_loader.load_point_from_eeprom(index, point);
+        _boundary[index] = Vector2f(point.x * 1e-5, point.y * 1e-5);
     }
     _boundary_num_points = _total;
     _boundary_loaded = true;
