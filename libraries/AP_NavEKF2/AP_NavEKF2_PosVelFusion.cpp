@@ -111,12 +111,13 @@ void NavEKF2_core::ResetPosition(void)
             // clear the timeout flags and counters
             rngBcnTimeout = false;
             lastRngBcnPassTime_ms = imuSampleTime_ms;
-        } else if (imuSampleTime_ms - extNavDataDelayed.time_ms < 250) {
+        } else if (imuSampleTime_ms - extNavMeasTime_ms < 250) {
             // use the range beacon data as a second preference
-            stateStruct.position.x = extNavDataDelayed.pos.x;
-            stateStruct.position.y = extNavDataDelayed.pos.y;
+            stateStruct.position.x = extNavDataNew.pos.x;
+            stateStruct.position.y = extNavDataNew.pos.y;
             // set the variances from the beacon alignment filter
-            P[7][7] = P[6][6] = sq(extNavDataDelayed.posErr);
+            P[7][7] = P[6][6] = sq(extNavDataNew.posErr);
+            gcs().send_text(MAV_SEVERITY_INFO, "ext nav reset pos");
         }
     }
     for (uint8_t i=0; i<imu_buffer_length; i++) {
