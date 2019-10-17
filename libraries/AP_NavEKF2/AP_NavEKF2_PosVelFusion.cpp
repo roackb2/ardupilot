@@ -305,13 +305,15 @@ void NavEKF2_core::SelectVelPosFusion()
     } else if (extNavDataToFuse && PV_AidingMode == AID_ABSOLUTE) {
         // This is a special case that uses and external nav system for position
         extNavUsedForPos = true;
-        activeHgtSource = HGT_SOURCE_EV;
         fuseVelData = false;
-        fuseHgtData = true;
         fusePosData = true;
         velPosObs[3] = extNavDataDelayed.pos.x;
         velPosObs[4] = extNavDataDelayed.pos.y;
-        velPosObs[5] = extNavDataDelayed.pos.z;
+        if (frontend->_altSource == 4) {
+            activeHgtSource = HGT_SOURCE_EV;
+            fuseHgtData = true;
+            velPosObs[5] = extNavDataDelayed.pos.z;
+        }
 
         // if compass is disabled, also use it for yaw
         if (!use_compass()) {
