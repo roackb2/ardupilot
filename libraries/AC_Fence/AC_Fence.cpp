@@ -249,7 +249,7 @@ bool AC_Fence::check_fence_polygon()
     }
 
     position = position * 100.0f;  // m to cm
-    if (_enabled == AC_FENCE_ENABLED_NFZ) {
+    if (_enabled == AC_FENCE_ENABLED_SOZ) {
         if (!_poly_loader.boundary_breached(position, _boundary_num_points, _boundary, true)) {
             // check if this is a new breach
             if (_breached_fences & AC_FENCE_TYPE_POLYGON) {
@@ -394,7 +394,7 @@ bool AC_Fence::check_destination_within_fence(const Location_Class& loc)
         // check ekf has a good location
         Vector2f posNE;
         if (loc.get_vector_xy_from_origin_NE(posNE)) {
-            if (_enabled == AC_FENCE_ENABLED_NFZ) {
+            if (_enabled == AC_FENCE_ENABLED_SOZ) {
                 if (!_poly_loader.boundary_breached(posNE, _boundary_num_points, _boundary, true)) {
                     return false;
                 }
@@ -483,7 +483,7 @@ Vector2f* AC_Fence::get_polygon_points(uint16_t& num_points) const
 /// returns true if we've breached the polygon boundary.  simple passthrough to underlying _poly_loader object
 bool AC_Fence::boundary_breached(const Vector2f& location, uint16_t num_points, const Vector2f* points) const
 {
-    if (_enabled == AC_FENCE_ENABLED_NFZ) {
+    if (_enabled == AC_FENCE_ENABLED_SOZ) {
         return !_poly_loader.boundary_breached(location, num_points, points, true);
     } else {
         return _poly_loader.boundary_breached(location, num_points, points, true);
