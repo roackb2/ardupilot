@@ -45,7 +45,7 @@ public:
     void enable(bool value);
 
     /// enabled - returns true if fence is enabled
-    bool enabled() const { return _enabled; }
+    uint8_t enabled() const { return _enabled; }
 
     /// get_enabled_fences - returns bitmask of enabled fences
     uint8_t get_enabled_fences() const;

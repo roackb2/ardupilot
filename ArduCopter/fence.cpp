@@ -35,6 +35,10 @@ void Copter::fence_check()
                 // if always land option mode is specified, land
                 if (fence.get_action() == AC_FENCE_ACTION_ALWAYS_LAND) {
                     set_mode(LAND, MODE_REASON_FENCE_BREACH);
+                } else if ((fence.enabled() == AC_FENCE_ENABLED_SOZ)  && (new_breaches & AC_FENCE_TYPE_POLYGON )) {
+                    if (!set_mode(BRAKE, MODE_REASON_FENCE_BREACH)) {
+                        set_mode(LAND, MODE_REASON_FENCE_BREACH);
+                    }
                 } else if (fence.get_breach_distance(new_breaches) <= AC_FENCE_GIVE_UP_DISTANCE) {
                     if (!set_mode(RTL, MODE_REASON_FENCE_BREACH)) {
                         set_mode(LAND, MODE_REASON_FENCE_BREACH);
