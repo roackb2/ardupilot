@@ -24,13 +24,13 @@ bool Copter::ModeRTL::init(bool ignore_checks)
             if (i==(num_points-1)) {
                 if (Vector2f::segment_intersection(cur, home, boundary[i], boundary[1], intersect)) {
                     copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
-                    gcs().send_text(MAV_SEVERITY_ERROR, "RTL will violate stay-out zone");
+                    gcs().send_text(MAV_SEVERITY_ERROR, "stay-out zone violation");
                     return false;
                 }
             } else {
                 if (Vector2f::segment_intersection(cur, home, boundary[i], boundary[i+1], intersect)) {
                     copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
-                    gcs().send_text(MAV_SEVERITY_ERROR, "RTL will violate stay-out zone");
+                    gcs().send_text(MAV_SEVERITY_ERROR, "stay-out zone violation");
                     return false;
                 }
             }
