@@ -129,7 +129,10 @@ void Copter::ModeAuto::rtl_start()
     _mode = Auto_RTL;
 
     // call regular rtl flight mode initialisation and ask it to ignore checks
-    copter.mode_rtl.init(true);
+    if (!copter.mode_rtl.init(false)) {
+        _mode = Auto_Loiter;
+       set_mode(BRAKE, MODE_REASON_FENCE_BREACH);
+    }
 }
 
 // auto_takeoff_start - initialises waypoint controller to implement take-off
@@ -198,6 +201,41 @@ void Copter::ModeAuto::wp_start(const Vector3f& destination)
 void Copter::ModeAuto::wp_start(const Location_Class& dest_loc)
 {
     _mode = Auto_WP;
+
+#if AC_FENCE == ENABLED
+    // reject destination if outside the fence
+    if (!copter.fence.check_destination_within_fence(dest_loc)) {
+        set_mode(BRAKE, MODE_REASON_FENCE_BREACH);
+        copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
+        // failure is propagated to GCS with NAK
+        return;
+    }
+    uint16_t num_points;
+    const Vector2f* boundary = copter.fence.get_polygon_points(num_points);
+    Vector2f curr_xy;
+    ahrs.get_relative_position_NE_origin(curr_xy);
+    curr_xy = curr_xy * 100.0f;
+    Vector2f dst_xy;
+    dest_loc.get_vector_xy_from_origin_NE(dst_xy);
+    Vector2f intersect;
+    for (int i=1;i<num_points;i++) { //0 is return point, not used
+        if (i==(num_points-1)) {
+            if (Vector2f::segment_intersection(curr_xy, dst_xy, boundary[i], boundary[1], intersect)) {
+                set_mode(BRAKE, MODE_REASON_FENCE_BREACH);
+                copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
+                gcs().send_text(MAV_SEVERITY_ERROR, "stay-out zone violation");
+                return;
+            }
+        } else {
+            if (Vector2f::segment_intersection(curr_xy, dst_xy, boundary[i], boundary[i+1], intersect)) {
+                set_mode(BRAKE, MODE_REASON_FENCE_BREACH);
+                copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
+                gcs().send_text(MAV_SEVERITY_ERROR, "stay-out zone violation");
+                return;
+            }
+        }
+    }
+#endif
 
     // send target to waypoint controller
     if (!wp_nav->set_wp_destination(dest_loc)) {
