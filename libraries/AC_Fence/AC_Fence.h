@@ -50,6 +50,8 @@ public:
     /// get_enabled_fences - returns bitmask of enabled fences
     uint8_t get_enabled_fences() const;
 
+    bool soz_enabled() const;
+
     /// pre_arm_check - returns true if all pre-takeoff checks have completed successfully
     bool pre_arm_check(const char* &fail_msg) const;
 

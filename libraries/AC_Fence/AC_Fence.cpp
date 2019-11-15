@@ -96,6 +96,11 @@ uint8_t AC_Fence::get_enabled_fences() const
     return _enabled_fences;
 }
 
+bool AC_Fence::soz_enabled() const
+{
+    return (_enabled == AC_FENCE_ENABLED_SOZ) && (_enabled_fences & AC_FENCE_TYPE_POLYGON);
+}
+
 // additional checks for the polygon fence:
 bool AC_Fence::pre_arm_check_polygon(const char* &fail_msg) const
 {

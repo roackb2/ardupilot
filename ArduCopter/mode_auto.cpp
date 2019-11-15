@@ -785,28 +785,30 @@ void Copter::ModeAuto::wp_run()
     }
 
 #if AC_FENCE == ENABLED
-    uint16_t num_points;
-    const Vector2f* boundary = copter.fence.get_polygon_points(num_points);
-    Vector2f curr_xy;
-    ahrs.get_relative_position_NE_origin(curr_xy);
-    curr_xy = curr_xy * 100.0f;
-    Vector3f dest = copter.wp_nav->get_wp_destination();
-    Vector2f dst_xy = {.x=dest.x, .y=dest.y};
-    Vector2f intersect;
-    for (int i=1;i<num_points;i++) { //0 is return point, not used
-        if (i==(num_points-1)) {
-            if (Vector2f::segment_intersection(curr_xy, dst_xy, boundary[i], boundary[1], intersect)) {
-                set_mode(BRAKE, MODE_REASON_FENCE_BREACH);
-                copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
-                gcs().send_text(MAV_SEVERITY_ERROR, "stay-out zone violation");
-                return;
-            }
-        } else {
-            if (Vector2f::segment_intersection(curr_xy, dst_xy, boundary[i], boundary[i+1], intersect)) {
-                set_mode(BRAKE, MODE_REASON_FENCE_BREACH);
-                copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
-                gcs().send_text(MAV_SEVERITY_ERROR, "stay-out zone violation");
-                return;
+    if (copter.fence.soz_enabled()) {
+        uint16_t num_points;
+        const Vector2f* boundary = copter.fence.get_polygon_points(num_points);
+        Vector2f curr_xy;
+        ahrs.get_relative_position_NE_origin(curr_xy);
+        curr_xy = curr_xy * 100.0f;
+        Vector3f dest = copter.wp_nav->get_wp_destination();
+        Vector2f dst_xy = {.x=dest.x, .y=dest.y};
+        Vector2f intersect;
+        for (int i=1;i<num_points;i++) { //0 is return point, not used
+            if (i==(num_points-1)) {
+                if (Vector2f::segment_intersection(curr_xy, dst_xy, boundary[i], boundary[1], intersect)) {
+                    set_mode(BRAKE, MODE_REASON_FENCE_BREACH);
+                    copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
+                    gcs().send_text(MAV_SEVERITY_ERROR, "stay-out zone violation");
+                    return;
+                }
+            } else {
+                if (Vector2f::segment_intersection(curr_xy, dst_xy, boundary[i], boundary[i+1], intersect)) {
+                    set_mode(BRAKE, MODE_REASON_FENCE_BREACH);
+                    copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
+                    gcs().send_text(MAV_SEVERITY_ERROR, "stay-out zone violation");
+                    return;
+                }
             }
         }
     }
@@ -909,28 +911,30 @@ void Copter::ModeAuto::land_run()
 void Copter::ModeAuto::rtl_run()
 {
 #if AC_FENCE == ENABLED
-    uint16_t num_points;
-    const Vector2f* boundary = copter.fence.get_polygon_points(num_points);
-    Vector2f curr_xy;
-    ahrs.get_relative_position_NE_origin(curr_xy);
-    curr_xy = curr_xy * 100.0f;
-    Vector3f dest = copter.wp_nav->get_wp_destination();
-    Vector2f dst_xy = {.x=dest.x,.y=dest.y};
-    Vector2f intersect;
-    for (int i=1;i<num_points;i++) { //0 is return point, not used
-        if (i==(num_points-1)) {
-            if (Vector2f::segment_intersection(curr_xy, dst_xy, boundary[i], boundary[1], intersect)) {
-                set_mode(BRAKE, MODE_REASON_FENCE_BREACH);
-                copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
-                gcs().send_text(MAV_SEVERITY_ERROR, "stay-out zone violation");
-                return;
-            }
-        } else {
-            if (Vector2f::segment_intersection(curr_xy, dst_xy, boundary[i], boundary[i+1], intersect)) {
-                set_mode(BRAKE, MODE_REASON_FENCE_BREACH);
-                copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
-                gcs().send_text(MAV_SEVERITY_ERROR, "stay-out zone violation");
-                return;
+    if (copter.fence.soz_enabled()) {
+        uint16_t num_points;
+        const Vector2f* boundary = copter.fence.get_polygon_points(num_points);
+        Vector2f curr_xy;
+        ahrs.get_relative_position_NE_origin(curr_xy);
+        curr_xy = curr_xy * 100.0f;
+        Vector3f dest = copter.wp_nav->get_wp_destination();
+        Vector2f dst_xy = {.x=dest.x,.y=dest.y};
+        Vector2f intersect;
+        for (int i=1;i<num_points;i++) { //0 is return point, not used
+            if (i==(num_points-1)) {
+                if (Vector2f::segment_intersection(curr_xy, dst_xy, boundary[i], boundary[1], intersect)) {
+                    set_mode(BRAKE, MODE_REASON_FENCE_BREACH);
+                    copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
+                    gcs().send_text(MAV_SEVERITY_ERROR, "stay-out zone violation");
+                    return;
+                }
+            } else {
+                if (Vector2f::segment_intersection(curr_xy, dst_xy, boundary[i], boundary[i+1], intersect)) {
+                    set_mode(BRAKE, MODE_REASON_FENCE_BREACH);
+                    copter.Log_Write_Error(ERROR_SUBSYSTEM_NAVIGATION, ERROR_CODE_DEST_OUTSIDE_FENCE);
+                    gcs().send_text(MAV_SEVERITY_ERROR, "stay-out zone violation");
+                    return;
+                }
             }
         }
     }

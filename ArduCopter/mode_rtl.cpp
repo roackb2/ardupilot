@@ -11,7 +11,8 @@
 bool Copter::ModeRTL::init(bool ignore_checks)
 {
     if (copter.position_ok() || ignore_checks) {
-        if (!ignore_checks) {
+#if AC_FENCE == ENABLED
+        if (!ignore_checks && copter.fence.soz_enabled()) {
             Vector2f cur, home, intersect;
             ahrs.get_relative_position_NE_origin(cur);
             cur = cur * 100.0f;
@@ -37,6 +38,7 @@ bool Copter::ModeRTL::init(bool ignore_checks)
                 }
             }
         }
+#endif
         // initialise waypoint and spline controller
         wp_nav->wp_and_spline_init();
         build_path(!copter.failsafe.terrain);
