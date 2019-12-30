@@ -3,7 +3,7 @@
 #if APM_BUILD_TYPE(APM_BUILD_APMrover2)
  # define AP_AVOID_BEHAVE_DEFAULT AC_Avoid::BehaviourType::BEHAVIOR_STOP
 #else
- # define AP_AVOID_BEHAVE_DEFAULT AC_Avoid::BehaviourType::BEHAVIOR_SLIDE
+ # define AP_AVOID_BEHAVE_DEFAULT AC_Avoid::BehaviourType::BEHAVIOR_STOP
 #endif
 
 const AP_Param::GroupInfo AC_Avoid::var_info[] = {
