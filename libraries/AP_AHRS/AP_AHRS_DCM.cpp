@@ -69,7 +69,7 @@ AP_AHRS_DCM::update(bool skip_ins_update)
 {
     // support locked access functions to AHRS data
     WITH_SEMAPHORE(_rsem);
-    
+
     float delta_t;
 
     if (_last_startup_ms == 0) {
@@ -178,7 +178,7 @@ AP_AHRS_DCM::reset(bool recover_eulers)
 {
     // support locked access functions to AHRS data
     WITH_SEMAPHORE(_rsem);
-    
+
     // reset the integration terms
     _omega_I.zero();
     _omega_P.zero();
@@ -489,7 +489,7 @@ AP_AHRS_DCM::drift_correction_yaw(void)
         // don't do any yaw correction while calibrating
         return;
     }
-    
+
     if (AP_AHRS_DCM::use_compass()) {
         /*
           we are using compass for yaw
@@ -761,7 +761,7 @@ AP_AHRS_DCM::drift_correction(float deltat)
         // waiting for more data
         return;
     }
-    
+
     bool using_gps_corrections = false;
     float ra_scale = 1.0f/(_ra_deltat*GRAVITY_MSS);
 
@@ -1079,9 +1079,11 @@ bool AP_AHRS_DCM::set_home(const Location &loc)
 {
     // check location is valid
     if (loc.lat == 0 && loc.lng == 0 && loc.alt == 0) {
+        gcs().send_text(MAV_SEVERITY_INFO, "lat, lng, alt are all zero, set_home ignored");
         return false;
     }
     if (!loc.check_latlng()) {
+        gcs().send_text(MAV_SEVERITY_INFO, "check latlng failed, set_home ignored");
         return false;
     }
     // home must always be global frame at the moment as .alt is
@@ -1136,4 +1138,3 @@ bool AP_AHRS_DCM::get_velocity_NED(Vector3f &vec) const
     vec = _gps.velocity();
     return true;
 }
-

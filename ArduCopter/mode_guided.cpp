@@ -180,6 +180,7 @@ bool ModeGuided::set_destination(const Vector3f& destination, bool use_yaw, floa
 {
     // ensure we are in position control mode
     if (guided_mode != Guided_WP) {
+        gcs().send_text(MAV_SEVERITY_INFO, "Mode is not Guided_WP, start position control");
         pos_control_start();
     }
 
@@ -198,6 +199,7 @@ bool ModeGuided::set_destination(const Vector3f& destination, bool use_yaw, floa
 
     // no need to check return status because terrain data is not used
     wp_nav->set_wp_destination(destination, false);
+    gcs().send_text(MAV_SEVERITY_INFO, "set_wp_destination succesful without terrain data");
 
     // log target
     copter.Log_Write_GuidedTarget(guided_mode, destination, Vector3f());
@@ -219,6 +221,7 @@ bool ModeGuided::set_destination(const Location& dest_loc, bool use_yaw, float y
 {
     // ensure we are in position control mode
     if (guided_mode != Guided_WP) {
+        gcs().send_text(MAV_SEVERITY_INFO, "Mode is not Guided_WP, start position control");
         pos_control_start();
     }
 
@@ -238,6 +241,7 @@ bool ModeGuided::set_destination(const Location& dest_loc, bool use_yaw, float y
         // failure is propagated to GCS with NAK
         return false;
     }
+    gcs().send_text(MAV_SEVERITY_INFO, "set_wp_destination succesful");
 
     // set yaw state
     set_yaw_state(use_yaw, yaw_cd, use_yaw_rate, yaw_rate_cds, relative_yaw);

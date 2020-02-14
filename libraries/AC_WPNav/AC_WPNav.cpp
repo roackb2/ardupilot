@@ -43,7 +43,7 @@ const AP_Param::GroupInfo AC_WPNav::var_info[] = {
     AP_GROUPINFO("SPEED_DN",    3, AC_WPNav, _wp_speed_down_cms, WPNAV_WP_SPEED_DOWN),
 
     // @Param: ACCEL
-    // @DisplayName: Waypoint Acceleration 
+    // @DisplayName: Waypoint Acceleration
     // @Description: Defines the horizontal acceleration in cm/s/s used during missions
     // @Units: cm/s/s
     // @Range: 50 500
@@ -161,11 +161,13 @@ void AC_WPNav::set_speed_down(float speed_down_cms)
 ///     returns false if conversion from location to vector from ekf origin cannot be calculated
 bool AC_WPNav::set_wp_destination(const Location& destination)
 {
+    gcs().send_text(MAV_SEVERITY_INFO, "set_wp_destination with location");
     bool terr_alt;
     Vector3f dest_neu;
 
     // convert destination location to vector
     if (!get_vector_NEU(destination, dest_neu, terr_alt)) {
+        gcs().send_text(MAV_SEVERITY_INFO, "convert destination location to vector failed");
         return false;
     }
 
@@ -188,21 +190,25 @@ bool AC_WPNav::get_wp_destination(Location& destination) const
 ///     terrain_alt should be true if destination.z is a desired altitude above terrain
 bool AC_WPNav::set_wp_destination(const Vector3f& destination, bool terrain_alt)
 {
+    gcs().send_text(MAV_SEVERITY_INFO, "set_wp_destination with destination");
 	Vector3f origin;
 
     // if waypoint controller is active use the existing position target as the origin
     if ((AP_HAL::millis() - _wp_last_update) < 1000) {
         origin = _pos_control.get_pos_target();
+        gcs().send_text(MAV_SEVERITY_INFO, "Waypoint controller active, use the existing position target as the origin");
     } else {
         // if waypoint controller is not active, set origin to reasonable stopping point (using curr pos and velocity)
         _pos_control.get_stopping_point_xy(origin);
         _pos_control.get_stopping_point_z(origin);
+        gcs().send_text(MAV_SEVERITY_INFO, "Waypoint controller not active");
     }
 
     // convert origin to alt-above-terrain
     if (terrain_alt) {
         float origin_terr_offset;
         if (!get_terrain_offset(origin_terr_offset)) {
+            gcs().send_text(MAV_SEVERITY_INFO, "No terrain offset, abort");
             return false;
         }
         origin.z -= origin_terr_offset;
@@ -224,6 +230,7 @@ bool AC_WPNav::set_wp_destination_NED(const Vector3f& destination_NED)
 ///     returns false on failure (likely caused by missing terrain data)
 bool AC_WPNav::set_wp_origin_and_destination(const Vector3f& origin, const Vector3f& destination, bool terrain_alt)
 {
+    gcs().send_text(MAV_SEVERITY_INFO, "set_wp_origin_and_destination called");
     // store origin and destination locations
     _origin = origin;
     _destination = destination;
@@ -250,11 +257,13 @@ bool AC_WPNav::set_wp_origin_and_destination(const Vector3f& origin, const Vecto
     float origin_terr_offset = 0.0f;
     if (terrain_alt) {
         if (!get_terrain_offset(origin_terr_offset)) {
+            gcs().send_text(MAV_SEVERITY_INFO, "No terrain alttitude");
             return false;
         }
     }
 
     // initialise intermediate point to the origin
+    gcs().send_text(MAV_SEVERITY_INFO, "Calling set_pos_target of _pos_control");
     _pos_control.set_pos_target(origin + Vector3f(0,0,origin_terr_offset));
     _track_desired = 0;             // target is at beginning of track
     _flags.reached_destination = false;

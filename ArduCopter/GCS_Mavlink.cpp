@@ -117,7 +117,7 @@ void GCS_MAVLINK_Copter::send_position_target_local_ned()
     if (!copter.flightmode->in_guided_mode()) {
         return;
     }
-    
+
     const GuidedMode guided_mode = copter.mode_guided.mode();
     Vector3f target_pos;
     Vector3f target_vel;
@@ -138,7 +138,7 @@ void GCS_MAVLINK_Copter::send_position_target_local_ned()
     mavlink_msg_position_target_local_ned_send(
         chan,
         AP_HAL::millis(), // time boot ms
-        MAV_FRAME_LOCAL_NED, 
+        MAV_FRAME_LOCAL_NED,
         type_mask,
         target_pos.x, // x in metres
         target_pos.y, // y in metres
@@ -977,6 +977,7 @@ void GCS_MAVLINK_Copter::handleMessage(const mavlink_message_t &msg)
 
         // exit if vehicle is not in Guided mode or Auto-Guided mode
         if (!copter.flightmode->in_guided_mode()) {
+            gcs().send_text(MAV_SEVERITY_INFO, "Not in guided mode, position target ignored");
             break;
         }
 
@@ -1017,6 +1018,7 @@ void GCS_MAVLINK_Copter::handleMessage(const mavlink_message_t &msg)
             } else {
                 // convert from alt-above-home to alt-above-ekf-origin
                 if (!AP::ahrs().home_is_set()) {
+                    gcs().send_text(MAV_SEVERITY_INFO, "Home is not set, position target ignored");
                     break;
                 }
                 Location origin;
@@ -1249,7 +1251,7 @@ void GCS_MAVLINK_Copter::handleMessage(const mavlink_message_t &msg)
         copter.g2.toy_mode.handle_message(msg);
         break;
 #endif
-        
+
     default:
         handle_common_message(msg);
         break;

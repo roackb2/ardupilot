@@ -58,14 +58,17 @@ bool Copter::set_home_to_current_location(bool lock) {
 //  returns true if home location set successfully
 bool Copter::set_home(const Location& loc, bool lock)
 {
+    gcs().send_text(MAV_SEVERITY_INFO, "Copter set home called");
     // check EKF origin has been set
     Location ekf_origin;
     if (!ahrs.get_origin(ekf_origin)) {
+        gcs().send_text(MAV_SEVERITY_INFO, "EKF origin not set, set_home ignored");
         return false;
     }
 
     // check home is close to EKF origin
     if (far_from_EKF_origin(loc)) {
+        gcs().send_text(MAV_SEVERITY_INFO, "Home is far from EKF origin, set_home ignored");
         return false;
     }
 

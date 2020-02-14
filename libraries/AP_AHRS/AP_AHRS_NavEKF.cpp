@@ -77,7 +77,7 @@ void AP_AHRS_NavEKF::reset_gyro_drift(void)
 {
     // support locked access functions to AHRS data
     WITH_SEMAPHORE(_rsem);
-    
+
     // update DCM
     AP_AHRS_DCM::reset_gyro_drift();
 
@@ -90,11 +90,11 @@ void AP_AHRS_NavEKF::update(bool skip_ins_update)
 {
     // support locked access functions to AHRS data
     WITH_SEMAPHORE(_rsem);
-    
+
     // drop back to normal priority if we were boosted by the INS
     // calling delay_microseconds_boost()
     hal.scheduler->boost_end();
-    
+
     // EKF1 is no longer supported - handle case where it is selected
     if (_ekf_type == 1) {
         _ekf_type.set(2);
@@ -346,7 +346,7 @@ void AP_AHRS_NavEKF::update_SITL(void)
             _last_body_odm_update_ms = timeStamp_ms;
             timeStamp_ms -= (timeStamp_ms - _last_body_odm_update_ms)/2; // correct for first order hold average delay
             Vector3f delAng = _ins.get_gyro();
-            
+
             delAng *= delTime;
             // rotate earth velocity into body frame and calculate delta position
             Matrix3f Tbn;
@@ -382,7 +382,7 @@ void AP_AHRS_NavEKF::reset(bool recover_eulers)
 {
     // support locked access functions to AHRS data
     WITH_SEMAPHORE(_rsem);
-    
+
     AP_AHRS_DCM::reset(recover_eulers);
     _dcm_attitude(roll, pitch, yaw);
     if (_ekf2_started) {
@@ -398,7 +398,7 @@ void AP_AHRS_NavEKF::reset_attitude(const float &_roll, const float &_pitch, con
 {
     // support locked access functions to AHRS data
     WITH_SEMAPHORE(_rsem);
-    
+
     AP_AHRS_DCM::reset_attitude(_roll, _pitch, _yaw);
     _dcm_attitude(roll, pitch, yaw);
     if (_ekf2_started) {
@@ -427,7 +427,7 @@ bool AP_AHRS_NavEKF::get_position(struct Location &loc) const
             return true;
         }
         break;
-        
+
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
     case EKF_TYPE_SITL: {
         if (_sitl) {
@@ -441,7 +441,7 @@ bool AP_AHRS_NavEKF::get_position(struct Location &loc) const
         break;
     }
 #endif
-        
+
     default:
         break;
     }
@@ -611,6 +611,7 @@ Vector2f AP_AHRS_NavEKF::groundspeed_vector(void)
 // from which to decide the origin on its own
 bool AP_AHRS_NavEKF::set_origin(const Location &loc)
 {
+    gcs().send_text(MAV_SEVERITY_INFO, "AP_AHRS_NavEKF set_origin called");
     const bool ret2 = EKF2.setOriginLLH(loc);
     const bool ret3 = EKF3.setOriginLLH(loc);
 
@@ -759,7 +760,7 @@ bool AP_AHRS_NavEKF::get_hagl(float &height) const
     case EKF_TYPE2:
     default:
         return EKF2.getHAGL(height);
-        
+
     case EKF_TYPE3:
         return EKF3.getHAGL(height);
 
@@ -1004,7 +1005,7 @@ AP_AHRS_NavEKF::EKF_TYPE AP_AHRS_NavEKF::active_EKF_type(void) const
         }
         break;
     }
-        
+
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
     case EKF_TYPE_SITL:
         ret = EKF_TYPE_SITL;
@@ -1111,7 +1112,7 @@ bool AP_AHRS_NavEKF::healthy(void) const
         }
         return true;
     }
-        
+
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
     case EKF_TYPE_SITL:
         return true;
@@ -1502,7 +1503,7 @@ bool AP_AHRS_NavEKF::resetHeightDatum(void)
 {
     // support locked access functions to AHRS data
     WITH_SEMAPHORE(_rsem);
-    
+
     switch (ekf_type()) {
 
     case 2:
@@ -1552,7 +1553,7 @@ void AP_AHRS_NavEKF::send_ekf_status_report(mavlink_channel_t chan) const
         }
         break;
 #endif
-        
+
     case EKF_TYPE2:
         return EKF2.send_status_report(chan);
 
@@ -1853,17 +1854,16 @@ AP_AHRS_NavEKF &AP::ahrs_navekf()
     return static_cast<AP_AHRS_NavEKF&>(*AP_AHRS::get_singleton());
 }
 
-// check whether compass can be bypassed for arming check in case when external navigation data is available 
+// check whether compass can be bypassed for arming check in case when external navigation data is available
 bool AP_AHRS_NavEKF::is_ext_nav_used_for_yaw(void) const
 {
     switch (active_EKF_type()) {
     case EKF_TYPE2:
         return EKF2.isExtNavUsedForYaw();
-        
+
     default:
-        return false; 
+        return false;
     }
 }
 
 #endif // AP_AHRS_NAVEKF_AVAILABLE
-
