@@ -330,6 +330,7 @@ void AC_AttitudeControl_Multi::update_throttle_rpy_mix()
 
 void AC_AttitudeControl_Multi::rate_controller_run()
 {
+    // gcs().send_text(MAV_SEVERITY_INFO, "rate_controller_run called");
     // move throttle vs attitude mixing towards desired (called from here because this is conveniently called on every iteration)
     update_throttle_rpy_mix();
 

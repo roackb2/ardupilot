@@ -338,6 +338,7 @@ void ModeGuided::set_angle(const Quaternion &q, float climb_rate_cms, bool use_y
 // should be called at 100hz or more
 void ModeGuided::run()
 {
+    // gcs().send_text(MAV_SEVERITY_INFO, "ModeGuided::run called");
     // call the correct auto controller
     switch (guided_mode) {
 
@@ -419,6 +420,7 @@ void Mode::auto_takeoff_run()
 // called from guided_run
 void ModeGuided::pos_control_run()
 {
+    // gcs().send_text(MAV_SEVERITY_INFO, "pos_control_run called");
     // process pilot's yaw input
     float target_yaw_rate = 0;
     if (!copter.failsafe.radio) {

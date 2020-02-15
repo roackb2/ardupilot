@@ -653,7 +653,6 @@ void AC_PosControl::set_max_speed_xy(float speed_cms)
 /// set_pos_target in cm from home
 void AC_PosControl::set_pos_target(const Vector3f& position)
 {
-    gcs().send_text(MAV_SEVERITY_INFO, "set_pos_target called");
     _pos_target = position;
 
     _flags.use_desvel_ff_z = false;
