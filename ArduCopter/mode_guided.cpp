@@ -199,7 +199,7 @@ bool ModeGuided::set_destination(const Vector3f& destination, bool use_yaw, floa
 
     // no need to check return status because terrain data is not used
     wp_nav->set_wp_destination(destination, false);
-    gcs().send_text(MAV_SEVERITY_INFO, "set_wp_destination succesful without terrain data");
+    // gcs().send_text(MAV_SEVERITY_INFO, "set_wp_destination succesful without terrain data");
 
     // log target
     copter.Log_Write_GuidedTarget(guided_mode, destination, Vector3f());
@@ -446,6 +446,7 @@ void ModeGuided::pos_control_run()
     // call z-axis position controller (wpnav should have already updated it's alt target)
     pos_control->update_z_controller();
 
+    // gcs().send_text(MAV_SEVERITY_INFO, "roll: %d, pitch: %d", pos_control->get_roll(), pos_control->get_pitch());
     // call attitude controller
     if (auto_yaw.mode() == AUTO_YAW_HOLD) {
         // roll & pitch from waypoint controller, yaw rate from pilot

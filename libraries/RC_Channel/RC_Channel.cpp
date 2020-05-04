@@ -335,6 +335,7 @@ bool RC_Channel::in_trim_dz() const
 void RC_Channel::set_override(const uint16_t v, const uint32_t timestamp_us)
 {
     if (!rc().gcs_overrides_enabled()) {
+        gcs().send_text(MAV_SEVERITY_INFO, "gcs override not enabled");
         return;
     }
 
@@ -414,7 +415,7 @@ void RC_Channel::read_mode_switch()
     mode_switch_changed(position);
 }
 
-bool RC_Channel::debounce_completed(int8_t position) 
+bool RC_Channel::debounce_completed(int8_t position)
 {
     // switch change not detected
     if (switch_state.current_position == position) {
@@ -447,7 +448,7 @@ void RC_Channel::init_aux_function(const aux_func_t ch_option, const aux_switch_
 {
     // init channel options
     switch(ch_option) {
-    case AUX_FUNC::FENCE:  
+    case AUX_FUNC::FENCE:
     case AUX_FUNC::RC_OVERRIDE_ENABLE:
     case AUX_FUNC::AVOID_PROXIMITY:
     case AUX_FUNC::MISSION_RESET:

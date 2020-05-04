@@ -2970,6 +2970,7 @@ void GCS_MAVLINK::handle_command_ack(const mavlink_message_t &msg)
 void GCS_MAVLINK::handle_rc_channels_override(const mavlink_message_t &msg)
 {
     if(msg.sysid != sysid_my_gcs()) {
+        gcs().send_text(MAV_SEVERITY_INFO, "message sysid %d is not sysid_my_gcs %d", msg.sysid, sysid_my_gcs());
         return; // Only accept control from our gcs
     }
 
