@@ -21,6 +21,7 @@
 #include <AP_HAL/AP_HAL.h>
 #include "AP_AHRS.h"
 #include "AP_AHRS_View.h"
+#include <GCS_MAVLink/GCS.h>
 #include <AP_Module/AP_Module.h>
 #include <AP_GPS/AP_GPS.h>
 #include <AP_Baro/AP_Baro.h>
@@ -96,7 +97,7 @@ void AP_AHRS_NavEKF::reset_gyro_drift(void)
 {
     // support locked access functions to AHRS data
     WITH_SEMAPHORE(_rsem);
-    
+
     // update DCM
     AP_AHRS_DCM::reset_gyro_drift();
 
@@ -113,11 +114,11 @@ void AP_AHRS_NavEKF::update(bool skip_ins_update)
 {
     // support locked access functions to AHRS data
     WITH_SEMAPHORE(_rsem);
-    
+
     // drop back to normal priority if we were boosted by the INS
     // calling delay_microseconds_boost()
     hal.scheduler->boost_end();
-    
+
     // EKF1 is no longer supported - handle case where it is selected
     if (_ekf_type == 1) {
         _ekf_type.set(2);
@@ -381,7 +382,7 @@ void AP_AHRS_NavEKF::update_SITL(void)
             _last_body_odm_update_ms = timeStamp_ms;
             timeStamp_ms -= (timeStamp_ms - _last_body_odm_update_ms)/2; // correct for first order hold average delay
             Vector3f delAng = _ins.get_gyro();
-            
+
             delAng *= delTime;
             // rotate earth velocity into body frame and calculate delta position
             Matrix3f Tbn;
@@ -418,7 +419,7 @@ void AP_AHRS_NavEKF::reset(bool recover_eulers)
 {
     // support locked access functions to AHRS data
     WITH_SEMAPHORE(_rsem);
-    
+
     AP_AHRS_DCM::reset(recover_eulers);
     _dcm_attitude = {roll, pitch, yaw};
 #if HAL_NAVEKF2_AVAILABLE
@@ -438,7 +439,7 @@ void AP_AHRS_NavEKF::reset_attitude(const float &_roll, const float &_pitch, con
 {
     // support locked access functions to AHRS data
     WITH_SEMAPHORE(_rsem);
-    
+
     AP_AHRS_DCM::reset_attitude(_roll, _pitch, _yaw);
     _dcm_attitude = {roll, pitch, yaw};
 #if HAL_NAVEKF2_AVAILABLE
@@ -740,8 +741,10 @@ bool AP_AHRS_NavEKF::set_origin(const Location &loc)
 {
 #if HAL_NAVEKF2_AVAILABLE
     const bool ret2 = EKF2.setOriginLLH(loc);
+    gcs().send_text(MAV_SEVERITY_INFO, "AP_AHRS_NavEKF EKF2 set_origin called");
 #endif
 #if HAL_NAVEKF3_AVAILABLE
+    gcs().send_text(MAV_SEVERITY_INFO, "AP_AHRS_NavEKF EKF3 set_origin called");
     const bool ret3 = EKF3.setOriginLLH(loc);
 #endif
 
@@ -1842,7 +1845,7 @@ bool AP_AHRS_NavEKF::resetHeightDatum(void)
 {
     // support locked access functions to AHRS data
     WITH_SEMAPHORE(_rsem);
-    
+
     switch (ekf_type()) {
 
     case EKFType::NONE:
@@ -2166,7 +2169,7 @@ uint8_t AP_AHRS_NavEKF::get_active_airspeed_index() const
 // we only have affinity for EKF3 as of now
 #if HAL_NAVEKF3_AVAILABLE
     if (active_EKF_type() == EKFType::THREE) {
-        return EKF3.getActiveAirspeed(get_primary_core_index());   
+        return EKF3.getActiveAirspeed(get_primary_core_index());
     }
 #endif
     // for the rest, let the primary airspeed sensor be used
@@ -2324,7 +2327,7 @@ AP_AHRS_NavEKF &AP::ahrs_navekf()
     return static_cast<AP_AHRS_NavEKF&>(*AP_AHRS::get_singleton());
 }
 
-// check whether compass can be bypassed for arming check in case when external navigation data is available 
+// check whether compass can be bypassed for arming check in case when external navigation data is available
 bool AP_AHRS_NavEKF::is_ext_nav_used_for_yaw(void) const
 {
     switch (active_EKF_type()) {
@@ -2340,7 +2343,7 @@ bool AP_AHRS_NavEKF::is_ext_nav_used_for_yaw(void) const
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
     case EKFType::SITL:
 #endif
-        return false; 
+        return false;
     }
     // since there is no default case above, this is unreachable
     return false;

@@ -20,18 +20,22 @@ bool Mode::do_user_takeoff_start(float takeoff_alt_cm)
 bool Mode::do_user_takeoff(float takeoff_alt_cm, bool must_navigate)
 {
     if (!copter.motors->armed()) {
+        gcs().send_text(MAV_SEVERITY_INFO, "Motors not armed, takeoff fail");
         return false;
     }
     if (!copter.ap.land_complete) {
         // can't takeoff again!
+        gcs().send_text(MAV_SEVERITY_INFO, "Land not completed, can't takeoff again");
         return false;
     }
     if (!has_user_takeoff(must_navigate)) {
         // this mode doesn't support user takeoff
+        gcs().send_text(MAV_SEVERITY_INFO, "Mode doesn't support user takeoff");
         return false;
     }
     if (takeoff_alt_cm <= copter.current_loc.alt) {
         // can't takeoff downwards...
+        gcs().send_text(MAV_SEVERITY_INFO, "Can't takeoff downwards");
         return false;
     }
 
@@ -41,6 +45,7 @@ bool Mode::do_user_takeoff(float takeoff_alt_cm, bool must_navigate)
     }
 
     if (!do_user_takeoff_start(takeoff_alt_cm)) {
+        gcs().send_text(MAV_SEVERITY_INFO, "do_user_takeoff_start fail");
         return false;
     }
 

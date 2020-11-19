@@ -343,6 +343,7 @@ bool RC_Channel::in_trim_dz() const
 void RC_Channel::set_override(const uint16_t v, const uint32_t timestamp_ms)
 {
     if (!rc().gcs_overrides_enabled()) {
+        gcs().send_text(MAV_SEVERITY_INFO, "gcs override not enabled");
         return;
     }
 
@@ -422,7 +423,7 @@ void RC_Channel::read_mode_switch()
     mode_switch_changed(position);
 }
 
-bool RC_Channel::debounce_completed(int8_t position) 
+bool RC_Channel::debounce_completed(int8_t position)
 {
     // switch change not detected
     if (switch_state.current_position == position) {
@@ -550,7 +551,7 @@ const RC_Channel::LookupTable RC_Channel::lookuptable[] = {
 };
 
 /* lookup the announcement for switch change */
-const char *RC_Channel::string_for_aux_function(AUX_FUNC function) const     
+const char *RC_Channel::string_for_aux_function(AUX_FUNC function) const
 {
      for (const struct LookupTable entry : lookuptable) {
         if (entry.option == function) {
@@ -589,13 +590,13 @@ bool RC_Channel::read_aux()
         const char *temp =  nullptr;
         switch (new_position) {
         case AuxSwitchPos::HIGH:
-            temp = "HIGH";           
+            temp = "HIGH";
             break;
         case AuxSwitchPos::MIDDLE:
             temp = "MIDDLE";
             break;
         case AuxSwitchPos::LOW:
-            temp = "LOW";          
+            temp = "LOW";
             break;
         }
         gcs().send_text(MAV_SEVERITY_INFO, "%s %s", aux_string, temp);
@@ -1097,10 +1098,10 @@ bool RC_Channel::read_3pos_switch(RC_Channel::AuxSwitchPos &ret) const
     if (in <= 900 or in >= 2200) {
         return false;
     }
-    
+
     // switch is reversed if 'reversed' option set on channel and switches reverse is allowed by RC_OPTIONS
     bool switch_reversed = reversed && rc().switch_reverse_allowed();
-    
+
     if (in < AUX_PWM_TRIGGER_LOW) {
         ret = switch_reversed ? AuxSwitchPos::HIGH : AuxSwitchPos::LOW;
     } else if (in > AUX_PWM_TRIGGER_HIGH) {
