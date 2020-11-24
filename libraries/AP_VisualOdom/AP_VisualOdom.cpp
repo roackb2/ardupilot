@@ -91,7 +91,7 @@ const AP_Param::GroupInfo AP_VisualOdom::var_info[] = {
     AP_GROUPINFO("_VEL_M_NSE", 5, AP_VisualOdom, _vel_noise, 0.1),
 
     // @Param: _POS_M_NSE
-    // @DisplayName: Visual odometry position measurement noise 
+    // @DisplayName: Visual odometry position measurement noise
     // @Description: Visual odometry position measurement noise minimum (meters). This value will be used if the sensor provides a lower noise value (or no noise value)
     // @Units: m
     // @Range: 0.1 10.0
@@ -126,12 +126,15 @@ void AP_VisualOdom::init()
     // create backend
     switch (_type) {
     case AP_VisualOdom_Type_None:
+        gcs().send_text(MAV_SEVERITY_INFO, "AP_VisualOdom_Type_None");
         // do nothing
         break;
     case AP_VisualOdom_Type_MAV:
+        gcs().send_text(MAV_SEVERITY_INFO, "AP_VisualOdom_Type_MAV");
         _driver = new AP_VisualOdom_MAV(*this);
         break;
     case AP_VisualOdom_Type_IntelT265:
+        gcs().send_text(MAV_SEVERITY_INFO, "AP_VisualOdom_Type_IntelT265");
         _driver = new AP_VisualOdom_IntelT265(*this);
         break;
     }
